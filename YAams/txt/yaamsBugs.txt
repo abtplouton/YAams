@@ -1,0 +1,58 @@
+Downloadbar
+* Kein Internet -> Alternative anbieten
+* Auch aus dem Swing/Hauptthread ermöglichen
+* Ersetzen durch YProgressWindow
+
+Ressourcenanzeige
+* Sounds werden als Grafik angezeigt (von der Database)
+* Audioanzeige
+* Infofields, zB Autor, Quelle
+* Onlinesuche
+* Unterstützung von zusätzlichen Infofeldern, wie für Quelle, Autor, ...
+
+Listenelement
+* Element per Tastaturauswählen
+* Unterstützung für Zwischenablage
+* Im/Export
+* Rückgängig/Wiederholen
+* Eigene Icons, für zB Status (+Filterfunktion)
+* Unterstützung von vielen Elementen durch Pager
+* Speichern des letzten ausgewählten Elements beim Schließen & wiederanzeige
+
+
+Fehlerberichte
+* Leichte Berichte sammeln / im Tab öffnen
+* Fatalerror unter Windows, Zeilenumbruch beim Stack
+
+Tabs
+* Letzter Tab, Schließen des Programms
+* Krümelnavigation überarbeiten
+* Helpmenü überarbeiten
+
+Statusleiste
+* Eigene Buttons festlegen
+* Fortschrittsbalken dort auslagern
+
+Ruby
+* Auslagern in Pluginpaket um Update zuvereinfachen / Grundinstallation zu entschlacken
+
+Plugins
+* Catalog vereinfachen
+* * Restart Button
+* * Such/Filterfunktion
+* Programmlevel / OS Support
+
+Project
+* Öffnen im neuen Ordner Tab
+
+YRGSS Player
+* Update von RGSS Code (wegen Fehlerberichte)
+* Unterstützung anderer RTP
+* Im Path Leeerzeichen unterstützen
+
+FormBuilder
+* Support für Add/Removelistener
+* Support für Redo/Uno/Modification
+
+Optionen
+* Sicheres Laden, Bei Absturz, Neusetzen /Rücksetzen der Optionen anbieten.

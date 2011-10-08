@@ -1,0 +1,42 @@
+what,kind,bundleId,bundleVersion,description,time
+started,bundle,org.eclipse.wb.discovery.core,1.0.0.r37x201106081733,"org.eclipse.wb.discovery.core",1318099172207
+started,bundle,com.collabnet.subversion.merge,2.2.4,"com.collabnet.subversion.merge",1318099172208
+started,bundle,org.tigris.subversion.clientadapter,1.6.12,"org.tigris.subversion.clientadapter",1318099172208
+started,bundle,org.tigris.subversion.subclipse.core,1.6.18,"org.tigris.subversion.subclipse.core",1318099172209
+started,bundle,org.tigris.subversion.subclipse.ui,1.6.18,"org.tigris.subversion.subclipse.ui",1318099172211
+os,sysinfo,,,"macosx",1318099172215
+arch,sysinfo,,,"x86_64",1318099172215
+ws,sysinfo,,,"cocoa",1318099172215
+locale,sysinfo,,,"en_US",1318099172215
+processors,sysinfo,,,"4",1318099172215
+java.runtime.name,sysinfo,,,"Java(TM) SE Runtime Environment",1318099172215
+java.runtime.version,sysinfo,,,"1.6.0_26-b03-383-11A511",1318099172215
+java.specification.name,sysinfo,,,"Java Platform API Specification",1318099172215
+java.specification.vendor,sysinfo,,,"Sun Microsystems Inc.",1318099172215
+java.specification.version,sysinfo,,,"1.6",1318099172215
+java.vendor,sysinfo,,,"Apple Inc.",1318099172215
+java.version,sysinfo,,,"1.6.0_26",1318099172215
+java.vm.info,sysinfo,,,"mixed mode",1318099172215
+java.vm.name,sysinfo,,,"Java HotSpot(TM) 64-Bit Server VM",1318099172215
+java.vm.specification.name,sysinfo,,,"Java Virtual Machine Specification",1318099172215
+java.vm.specification.vendor,sysinfo,,,"Sun Microsystems Inc.",1318099172215
+java.vm.specification.version,sysinfo,,,"1.0",1318099172215
+java.vm.vendor,sysinfo,,,"Apple Inc.",1318099172215
+java.vm.version,sysinfo,,,"20.1-b02-383",1318099172215
+started,bundle,org.eclipse.m2e.usagedata,1.0.0.20110607-2117,"org.eclipse.m2e.usagedata",1318099172223
+started,bundle,org.eclipse.wb.discovery.ui,1.0.0.r37x201106081733,"org.eclipse.wb.discovery.ui",1318099173195
+started,bundle,org.eclipse.dltk.core,3.0.0.v20110609-1525,"org.eclipse.dltk.core",1318099173323
+started,bundle,org.eclipse.dltk.launching,3.0.0.v20110423,"org.eclipse.dltk.launching",1318099173341
+started,bundle,org.eclipse.dltk.ui,3.0.0.v20110609-1525,"org.eclipse.dltk.ui",1318099173345
+started,bundle,org.tigris.subversion.subclipse.tools.usage,1.0.1,"org.tigris.subversion.subclipse.tools.usage",1318099173347
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1318099174578
+activated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1318106345676
+deactivated,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1318106346553
+started,bundle,org.eclipse.ui.navigator,3.5.100.I20110524-0800,"org.eclipse.ui.navigator",1318107207404
+closed,workbench,org.eclipse.ui.workbench,3.7.0.I20110519-0100,"",1318107207458
+stopped,bundle,org.eclipse.mylyn.bugzilla.ui,3.6.0.v20110608-1400,"org.eclipse.mylyn.bugzilla.ui",1318107208531
+stopped,bundle,org.eclipse.mylyn.bugzilla.core,3.6.0.v20110608-1400,"org.eclipse.mylyn.bugzilla.core",1318107208531
+stopped,bundle,org.eclipse.mylyn.ide.ant,3.6.0.v20110608-1400,"org.eclipse.mylyn.ide.ant",1318107208569
+stopped,bundle,org.eclipse.mylyn.java.ui,3.6.0.v20110608-1400,"org.eclipse.mylyn.java.ui",1318107208608
+stopped,bundle,org.eclipse.mylyn.ide.ui,3.6.0.v20110608-1400,"org.eclipse.mylyn.ide.ui",1318107208633
+stopped,bundle,org.eclipse.mylyn.team.ui,3.6.0.v20110608-1400,"org.eclipse.mylyn.team.ui",1318107208633

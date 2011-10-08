@@ -1,0 +1,35 @@
+Roadmap
+
+0.004
+- Eventsystem, Mapview, erstellen, ...
+
+0.005
+- Wizard
+- Pluginsystem, Serververwaltung
+- Breadcumps, Baumnavigation überarbeiten
+- Pluginsplittung (Launcher, Core, Ressourcen, Ruby, RGSS Game)
+- Plugin Database vervollständigen
+- Eventcommands
+- Plugins
+-.. version: stable, testing, dev
+-.. restart funktion
+- WIKI
+
+0.006
+- Pluginguide
+- Bessere Sprachenunterstützung
+- Hilfe einbauen
+- Werbung
+
+Launcher
+- GetSavePath
+- GetVersion (Selbst)
+- Check for Update? (Every week, setting chance)
+-> Show Info
+- Don't Found Core
+-.. Download it
+- Check for Updates?
+-.. Download it
+-> Show Info
+-> Safestart?
+-.. Start Core

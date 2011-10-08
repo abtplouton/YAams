@@ -1,0 +1,60 @@
+
+#=======================================
+# database
+#=======================================
+* Manchmal wird der Systemeintrag nicht erstellt.
+* Formresselement, Audio wird als Grafik erkannt, fehlende/falsch verweisende Grafiken und Abbruch bei der Grafikauswahl bringen es manchmal durcheinander.
+* Fehlende Einträge unterstützen (neues GUI Element erstellen)
+* Unterstützung für VX Projekte
+* Hilfe für andere Einträge nachliefern.
+
+#=======================================
+# Map Editor
+#=======================================
+* Sollte man beim Speichern weniger als 3 Ebenen haben, stürzt er ab.
+* Mehr als 3 Ebenen werden kommentarlos beim Speichern gelöscht.
+* Beim Auswählen der Startpostion löst ein Mapwechsel einige Fehler aus.
+* Das Erstellen/Löschen von Karten ist nicht möglich, wirft eine NotImplementedException
+* Support für VX
+* Bessere Integration/Anpassung
+* Bessere Unterstützung von Autotiles
+* Map Info in Map Editor umbennen
+
+#=======================================
+# Script
+#=======================================
+* Savebutton setzt Modifiziertstatus nicht richtig zurück, only tab
+* Syntaxhighlighting
+* Script zum Editieren im neuen Tab/externen Editor öffnen
+
+#=======================================
+# Export & Play
+#=======================================
+* Vor dem Export Verzeichnis aufräumen
+* RTP Exportangebot
+* Exportunterstützung für Android
+* Genierung von Readmes
+* Besserer Linuxsupport
+* Bessere Hilfe
+* Uploadfunktion für anderen Dienste (zB. ftp, studio, ...)
+
+#=======================================
+# RPG Maker XP Bridge
+#=======================================
+* Bessere Lizenzprüfung
+* Ermöglichen, es später erneut prüfen zu können
+* Funktion um Projekte im RPG Maker XP öffnen können
+* RTP Auswahl Option + Installation solcher.
+
+#=======================================
+# DevTools
+#=======================================
+* Iconview
+* Extentionpointview
+*.. Parameteridview
+
+#=======================================
+# Rubycode
+#=======================================
+* Auswahl ob man 1.87/1.92 Code ausführen will
+* Tutorial/Erste Hilfe

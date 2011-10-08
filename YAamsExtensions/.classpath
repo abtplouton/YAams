@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/YAams"/>
+	<classpathentry kind="lib" path="lib/substance.jar"/>
+	<classpathentry kind="lib" path="/YAams/lib/commons-lang-2.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/commons-lang-2.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/YAams/lib/ini4j-0.5.2.jar" sourcepath="/YAams/lib/javadoc/ini4j-0.5.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YrgssMaker/lib/ini4j-0.5.2.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/YAams/lib/log4j-1.2.16.jar" sourcepath="/YAams/lib/javadoc/ini4j-0.5.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/ini4j-0.5.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/YAams/lib/swingx-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/swingx-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/YAams/lib/jide/jide-common.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/YAams/lib/jide/jide-components.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/YAams/lib/jide/jide-editor.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jruby-complete-1.6.3.jar" sourcepath="lib/source/jruby-src-1.6.3.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jruby.org/apidocs/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/sound/jogg-jorbis-jl-mp3spi-tritonus-vorbisspi.jar"/>
+	<classpathentry kind="lib" path="/YAams/lib/flamingo.jar" sourcepath="/YAams/lib/javadoc/flamingo-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YrgssPackAndGo/lib/javadoc/flamingo-javadoc.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/ColorPicker.jar" sourcepath="lib/ColorPicker.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

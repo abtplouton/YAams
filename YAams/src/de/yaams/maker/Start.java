@@ -1,0 +1,238 @@
+/**
+ * 
+ */
+package de.yaams.maker;
+
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
+import javax.swing.UIManager;
+
+import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.Log;
+import de.yaams.maker.helper.Setting;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.helper.gui.start.YWindowStart;
+import de.yaams.maker.helper.wizard.WizardManagement;
+import de.yaams.maker.helper.wizard.WizardOnlinePage;
+import de.yaams.maker.helper.wizard.WizardPluginsPage;
+import de.yaams.maker.helper.wizard.WizardWelcomePage;
+import de.yaams.maker.programm.YAamsCore;
+import de.yaams.maker.programm.YaFrame;
+import de.yaams.maker.programm.favorit.FavoritManagement;
+import de.yaams.maker.programm.help.BasicHelpAdder;
+import de.yaams.maker.programm.plugins.PluginPlugin;
+import de.yaams.maker.programm.project.ProjectManagement;
+import de.yaams.maker.programm.project.ProjectTabEvent;
+import de.yaams.maker.programm.tabs.BasicTabEvent;
+
+/**
+ * @author Nebli
+ * 
+ */
+public class Start {
+
+	public Start() {
+		// Set System L&F
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (final Throwable t) {
+			Log.ger.info("Can not set Look and Feel", t);
+		}
+
+		try {
+			run();
+		} catch (final Throwable t) {
+			YEx.lastExit("Can not run program", t);
+		}
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		new Start();
+
+	}
+
+	/**
+	 * Check Java 6 & Look and Feel
+	 * 
+	 * @param errors
+	 */
+	public void initSystem(YMessagesDialog errors) {
+
+		// has java6?
+		if (!SystemUtils.IS_JAVA_1_6) {
+			errors.add(I18N.t("To run correctly, please install at least Java 6 (1.6). You has only {0}", SystemUtils.JAVA_VERSION),
+					Level.ERROR_INT);
+		}
+	}
+
+	/**
+	 * Register all basic tabs
+	 */
+	protected void registerTabs() {
+
+		YaFrame.registerTab(new BasicTabEvent());
+		YaFrame.registerTab(new ProjectTabEvent());
+
+	}
+
+	/**
+	 * Helpermethod to show the message
+	 * 
+	 * @param y
+	 * @return
+	 */
+	protected AppenderSkeleton addLog(final YWindowStart y) {
+		AppenderSkeleton a = new AppenderSkeleton() {
+
+			@Override
+			public boolean requiresLayout() {
+				return false;
+			}
+
+			@Override
+			public void close() {
+
+			}
+
+			@Override
+			protected void append(LoggingEvent le) {
+				try {
+					y.setNote(le.getMessage().toString());
+				} catch (Throwable t) {
+				}
+			}
+		};
+		Log.ger.addAppender(a);
+
+		return a;
+	}
+
+	/**
+	 * run all
+	 */
+	protected void run() {
+
+		// set licence
+		com.jidesoft.utils.Lm.verifyLicense("Steffen Trutz", "YAams", "90DijknROE1VxT0qJcWahMoqa5knNr2");
+
+		// basics
+		YMessagesDialog mess = new YMessagesDialog(I18N.t("Kann {0} nicht richtig laden", YAamsCore.TITLE), "yaams.start");
+		IconCache.init(mess);
+		final YWindowStart y = new YWindowStart();
+
+		// add log
+		final AppenderSkeleton aps = addLog(y);
+
+		// load
+		initSystem(mess);
+		YAamsCore.init(mess);
+		I18N.init();
+		new BasicHelpAdder();
+		// java.security.Security.addProvider(new
+		// com.sun.crypto.provider.SunJCE());
+
+		// load rest
+		YaFrame.init();
+		registerTabs();
+		ProjectManagement.start();
+		FavoritManagement.init();
+
+		// check Beta
+		if (YAamsCore.BETA) {
+			new YMessagesDialog(YAamsCore.TITLE, "yaams.beta")
+					.add(I18N
+							.t("Du verwendest eine Beta-Version von YAams. Nicht alles muss so funktionieren,<br>"
+									+ "wie es erwartet wird.<br> Solltest du Fehler finden, Verbesserungsvorschläge haben, nutze das Feedbackformular.<br>Vielen Dank fürs Testen."),
+							Level.INFO_INT).setIcon(IconCache.get("beta", 64)).showOk();
+		}
+
+		// error test
+		// YEx.error("title", new Throwable("test2"));
+
+		// add plugins
+		PluginPlugin.start(mess);
+
+		// Get the current screen size & check it
+		Dimension scrnsize = Toolkit.getDefaultToolkit().getScreenSize();
+		if (scrnsize.getWidth() < 1024 || scrnsize.getHeight() < 768) {
+			mess.add(I18N.t(
+					"{0} benötigt mind. 1024x768 Fensterauflösung um optimal laufen zu können. Es wurde aber nur {1}x{2} gefunden.",
+					YAamsCore.NAME, scrnsize.getWidth(), scrnsize.getHeight()), Level.INFO_INT);
+		}
+		Log.ger.info("Calc for Screen: " + scrnsize.getWidth() + "x" + scrnsize.getHeight());
+
+		// check ram
+		if (Runtime.getRuntime().maxMemory() < 1024 * 1024 * 242) {
+			mess.add(I18N.t("{0} benötigt mind. 256 MB Ram um optimal laufen zu können. Es wurde aber nur {1} MB gefunden.",
+					YAamsCore.NAME, Runtime.getRuntime().maxMemory() / (1024 * 1024)), Level.INFO_INT);
+		}
+
+		final StringBuilder view = new StringBuilder("");
+		if (mess.getLevel() == Level.INFO_INT) {
+			// exist system?
+			if (mess.setTitle(I18N.t("Starte {0}", YAamsCore.NAME)).showOk()) {
+				view.append("1");
+			}
+		} else {
+			// exist system?
+			if (mess.setFooter(I18N.t("Trotzdem versuchen auszuführen?")).showQuestion()) {
+				view.append("1");
+			}
+		}
+
+		// add welcome?
+		if (!Setting.exist("gui.level")) {
+			WizardManagement.addPage(new WizardWelcomePage());
+		}
+
+		// add plugins?
+		if (!Setting.exist("wizard.plugin")) {
+			WizardManagement.addPage(new WizardPluginsPage());
+		}
+
+		// add online?
+		if (!Setting.exist("net.access")) {
+			WizardManagement.addPage(new WizardOnlinePage());
+		}
+
+		// 2. wizard round
+		WizardManagement.start(new AE() {
+
+			@Override
+			public void run() {
+				lastStep(y, aps, view.length() > 0);
+
+			}
+		});
+	}
+
+	/**
+	 * Show the window, last step after the 2. wizard round
+	 */
+	protected void lastStep(YWindowStart y, AppenderSkeleton aps, boolean view) {
+
+		if (view) {
+			// show
+			YaFrame.get().start();
+		}
+
+		// remove log
+		Log.ger.removeAppender(aps);
+		// close
+		y.close();
+	}
+
+}

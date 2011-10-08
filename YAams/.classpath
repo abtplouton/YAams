@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/jide/commons-math-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/jide/jide-common.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jide/jide-components.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/swingx-1.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/swingx-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jide/jide-editor.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/flamingo.jar" sourcepath="lib/javadoc/flamingo-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YrgssPackAndGo/lib/javadoc/flamingo-javadoc.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/trident.jar"/>
+	<classpathentry kind="lib" path="lib/ini4j-0.5.2.jar" sourcepath="lib/javadoc/ini4j-0.5.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YrgssMaker/lib/ini4j-0.5.2.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jide/jide-grids.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/jide/javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/commons-lang-2.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar" sourcepath="lib/javadoc/ini4j-0.5.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/ini4j-0.5.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/miglayout-3.7.3.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/miglayout-3.7.3.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/xpp3-1.1.3.4.C.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.3.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/xsteam-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jgoodies-forms-1.4.0.jar" sourcepath="lib/javadoc/jform-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/jform-javadoc.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jgoodies-common-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/lib/flyingsaucer-renderer.jar" sourcepath="lib/source/flyingsaucer-src.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/YAams/lib/javadoc/flyingsaucer-javadoc.zip!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/lib/xml-apis-xerces-2.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/swing-worker.jar"/>
+	<classpathentry kind="lib" path="lib/SpinningProgressBarUI.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
