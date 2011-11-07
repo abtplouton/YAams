@@ -4,7 +4,6 @@
 package de.yaams.maker.programm.plugins;
 
 import java.awt.Component;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,9 +16,6 @@ import de.yaams.maker.helper.gui.form.core.FormBuilder;
 import de.yaams.maker.helper.gui.form.core.FormHeader;
 import de.yaams.maker.helper.gui.list.BasisListElement;
 import de.yaams.maker.helper.gui.tabs.SplitActionListElement;
-import de.yaams.maker.programm.YAamsCore;
-import de.yaams.maker.programm.plugins.core.PluginFolder;
-import de.yaams.maker.programm.plugins.core.PluginManager;
 import de.yaams.maker.programm.project.Project;
 import de.yaams.maker.programm.tabs.OptionsTab;
 
@@ -36,13 +32,7 @@ public class PluginPlugin {
 	 */
 	public static void start(YMessagesDialog mess) {
 
-		// check folder count
-		if (PluginManager.getFolder().size() == 0) {
-			PluginManager.addFolder(new PluginFolder(new File(YAamsCore.programPath, "plugins"), "Default"));
-		}
-
-		PluginManager.start(mess);
-		PluginManager.installOnlineInfo(false);
+		PluginLoader.init(mess);
 
 		// run over all plugins again
 		// PluginManager.start(mess);

@@ -1,0 +1,100 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.HashMap;
+
+import org.apache.log4j.Level;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.Log;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.programm.YAamsCore;
+
+/**
+ * @author abby
+ * 
+ */
+public class PluginLoader {
+
+	public static File folder;
+	protected static HashMap<String, PluginInfo> plugins;
+
+	/**
+	 * 
+	 */
+	public static void init(YMessagesDialog ymd) {
+		// has folder?
+		if (folder == null) {
+			folder = new File(YAamsCore.programPath, "Plugins");
+		}
+
+		// check folder
+		if (!FileHelper.checkPath(folder, ymd, true, true)) {
+			return;
+		}
+
+		// load active settings
+		plugins = (HashMap<String, PluginInfo>) FileHelper.loadXML(new File(folder, "setting.xml"));
+		if (plugins == null) {
+			plugins = new HashMap<String, PluginInfo>();
+		}
+
+		// extract plugins?
+		for (File path : folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".yex");
+			}
+		})) {
+			try {
+				// get id
+				String id = path.getName().substring(0, path.getName().length() - 4).toLowerCase();
+
+				// create folder
+				FileHelper.mkdirs(new File(folder, id));
+
+				// extract file
+				FileHelper.extractArchive(path, new File(folder, id));
+
+				// delete archiv
+				FileHelper.deleteFile(path);
+
+				// show message
+				// md.add(I18N.t("Entpacken vom Plugin {0} war erfolgreich.",
+				// id),
+				// Level.INFO_INT);
+				Log.ger.info("Extract " + path);
+				// mess.add(I18N.t("Extract {0} successful.", id));
+			} catch (final Throwable t) {
+				ymd.add(YEx.toString("Can not add Plugin " + path, t, false), Level.WARN_INT);
+			}
+		}
+
+		// load all plugins from the folder
+		for (File path : folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.isDirectory();
+			}
+		})) {
+			// exist?
+			if (!plugins.containsKey(path.getName())) {
+				plugins.put(path.getName(), new PluginInfo(path));
+			}
+		}
+		
+		//check all existing plugins
+		for(String key:plugins.keySet()){
+			if (new File())
+		}
+
+	}
+
+}

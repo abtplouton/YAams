@@ -5,6 +5,7 @@ package de.yaams.extensions.rgssproject.database.tabs;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.jruby.RubyArray;
@@ -13,8 +14,11 @@ import org.jruby.RubyString;
 
 import de.yaams.extensions.rgssproject.RGSSProjectHelper;
 import de.yaams.extensions.rgssproject.RTP;
+import de.yaams.extensions.rgssproject.database.JavaTable;
 import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
+import de.yaams.extensions.rgssproject.database.RGSS1Load;
 import de.yaams.extensions.rgssproject.database.form.FormGraphEle;
+import de.yaams.extensions.rgssproject.database.form.FormTileset;
 import de.yaams.extensions.rgssproject.database.form.RubyForm;
 import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.gui.form.FormElement;
@@ -97,10 +101,23 @@ public class TilesetTab extends GTab {
 		form.addElement("fog.sy", RubyForm.getNumber(I18N.t("SY"), act, "@fog_sy").setInfoTxt(I18N.t("(automatic X-axis scrolling speed)")));
 
 		// build panel
-		form.addHeader("unsupported", new FormHeader(I18N.t("Nicht unterstützt"), "error").setColumn(6).setCollapsed(true));
-		form.addElement("unsupported.pass", RubyForm.getError("Passability", "@passages", act));
-		form.addElement("unsupported.prio", RubyForm.getError("Priorities", "@priorities", act));
-		form.addElement("unsupported.terr", RubyForm.getError("Terrain", "@terrain_tags", act));
+		form.addHeader("tileset", new FormHeader(I18N.t("Tileset"), "tileset").setColumn(16));
+		// load tileset
+		ArrayList<BufferedImage> img = RGSS1Load.loadTilesetAsImage(project, id);
+
+		// scale?
+		JavaTable table = new JavaTable(act.getInstanceVariable("@passages"));
+		int lg = img.size() + 384;
+		if (lg != table.getX()) {
+			System.out.println("rescale to " + lg + " " + table.getX());
+			table.setX(lg);
+			new JavaTable(act.getInstanceVariable("@priorities")).setX(lg);
+			new JavaTable(act.getInstanceVariable("@terrain_tags")).setX(lg);
+		}
+
+		for (int i = 0, l = img.size(); i < l; i++) {
+			form.addElement("tileset." + i, new FormTileset(act, i + 384, img.get(i)).setSorting(i));
+		}
 
 	}
 

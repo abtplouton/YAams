@@ -9,7 +9,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
 /**
  * @author Nebli
  * 
@@ -70,19 +69,19 @@ public class FormNumberSpinner extends FormSaveElement {
 	 * @param step
 	 */
 	public FormNumberSpinner setMinMax(int min, int max, int step) {
-		//set
+		// set
 		((SpinnerNumberModel) field.getModel()).setMinimum(min);
 		((SpinnerNumberModel) field.getModel()).setMaximum(max);
 		((SpinnerNumberModel) field.getModel()).setStepSize(step);
 
-		//fix it?
-		if (Long.valueOf(field.getValue().toString()) < min){
+		// fix it?
+		if (Long.valueOf(field.getValue().toString()) < min) {
 			field.setValue(min);
 		}
-		if (Long.valueOf(field.getValue().toString()) > max){
+		if (Long.valueOf(field.getValue().toString()) > max) {
 			field.setValue(max);
 		}
-		
+
 		return this;
 	}
 

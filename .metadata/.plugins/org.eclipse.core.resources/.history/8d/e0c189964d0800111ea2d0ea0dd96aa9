@@ -1,0 +1,10 @@
+package de.yaams.maker.helper.gui.rightclick;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.text.JTextComponent;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.icons.IconCache;
+

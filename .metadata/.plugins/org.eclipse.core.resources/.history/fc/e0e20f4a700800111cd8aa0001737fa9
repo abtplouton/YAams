@@ -1,0 +1,281 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.form;
+
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.apache.commons.lang.Validate;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+
+import de.yaams.maker.helper.JavaHelper;
+import de.yaams.maker.helper.extensions.ExtentionManagement;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.helper.gui.form.validator.ValidatorBase;
+
+/**
+ * @author Nebli
+ * 
+ */
+public abstract class FormElement {
+
+	/**
+	 * Nofity listerns about chancing if this element
+	 */
+	protected ArrayList<FormElementChangeListener> listeners;
+	protected JLabel header;
+	protected JComponent element, infoTxt;
+	protected int sorting;
+	protected ArrayList<ValidatorBase> validators;
+
+	// protected ArrayList<FormElement> subElements;
+	// protected Integer formLayout;
+
+	/**
+	 * 
+	 */
+	public FormElement(final String title) {
+		if (title != null) {
+			header = new JLabel(title);
+		}
+		listeners = new ArrayList<FormElementChangeListener>();
+		validators = new ArrayList<ValidatorBase>();
+	}
+
+	/**
+	 * Add a new chance listener to this element;
+	 * 
+	 * @param FormElementChangeListener
+	 */
+	public FormElement addChangeListener(FormElementChangeListener c) {
+		listeners.add(c);
+
+		return this;
+	}
+
+	/**
+	 * Add a new validator to this element;
+	 * 
+	 * @param ValidatorBase
+	 */
+	public FormElement addValidator(ValidatorBase v) {
+		v.setForm(this);
+		validators.add(v);
+
+		return this;
+	}
+
+	/**
+	 * Check if all elements valide
+	 * 
+	 * @return
+	 */
+	public void isValidate(YMessagesDialog y) {
+		// ask the validators
+		for (ValidatorBase v : validators) {
+			v.isValide(y);
+		}
+	}
+
+	/**
+	 * notify all
+	 */
+	public void informListeners() {
+		for (FormElementChangeListener c : listeners) {
+			c.stateChanged(this);
+		}
+	}
+
+	/**
+	 * @return the header
+	 */
+	public JLabel getHeader() {
+		return header;
+	}
+
+	/**
+	 * @return the element
+	 */
+	public JComponent getElement(final boolean withAutoSaveFunction) {
+
+		// ask extension
+		ExtentionManagement.work("formelement." + getClass().getSuperclass().getSimpleName(),
+				JavaHelper.createHashStringObj("form", this, "autosave", withAutoSaveFunction));
+
+		// has infotxt?
+		if (infoTxt == null) {
+			return getInternElement();
+		}
+
+		final JPanel p = new JPanel(new BorderLayout());
+		p.add(getInternElement(), BorderLayout.CENTER);
+		// add info button
+		p.add(infoTxt, BorderLayout.EAST);
+
+		return p;
+	}
+
+	/**
+	 * Get intern element, only for rendering
+	 * 
+	 * @return
+	 */
+	protected JComponent getInternElement() {
+		return element;
+	}
+
+	/**
+	 * Get the content from the element as string
+	 */
+	public abstract String getContentAsString();
+
+	/**
+	 * Helpermethod to add the elements to the builder, overwrite it, if the
+	 * component need a special look
+	 */
+	public void addToContainer(DefaultFormBuilder builder, final boolean withAutoSaveFunction) {
+		try {
+			// check it
+			Validate.notNull(getHeader(), "Header is null");
+
+			builder.append(getHeader());
+			builder.append(getElement(withAutoSaveFunction));
+		} catch (final Throwable t) {
+			YEx.info("Can not create element for " + this.getClass(), t);
+		}
+	}
+
+	/**
+	 * @param p
+	 * @param withAutoSaveFunction
+	 */
+	// protected void buildTwoColumn(final JPanel p, final boolean
+	// withAutoSaveFunction) {
+	// // header
+	// p.add(getHeader(), ParagraphLayout.NEW_PARAGRAPH);
+	//
+	// // content
+	// JComponent e = getElement(withAutoSaveFunction);
+	// if (e != null) {
+	// p.add(e, formLayout);
+	// }
+	//
+	// // add subcontent?
+	// if (subElements != null) {
+	// for (FormElement fe : subElements) {
+	// p.add(fe.getElement(withAutoSaveFunction), fe.getFormLayout());
+	// }
+	// }
+	// }
+
+	/**
+	 * @param p
+	 * @param withAutoSaveFunction
+	 */
+	// protected void buildOneColumn(final JPanel p, final boolean
+	// withAutoSaveFunction) {
+	// // header?
+	// if (getHeader() == null || getHeader().getText().length() > 0) {
+	// p.add(getHeader());
+	// }
+	//
+	// // add content
+	// p.add(getElement(withAutoSaveFunction));
+	//
+	// // add subcontent?
+	// if (subElements != null) {
+	// for (FormElement fe : subElements) {
+	// p.add(fe.getElement(withAutoSaveFunction));
+	// }
+	// }
+	// }
+
+	/**
+	 * @return the infoTxt
+	 */
+	public JComponent getInfoTxt() {
+		return infoTxt;
+	}
+
+	/**
+	 * Helpermethod to set at the end a button with addional info
+	 * 
+	 * @param infoTxt
+	 *            the infoTxt to set
+	 */
+	public FormElement setInfoTxt(final String infoTxt, final String icon) {
+		this.infoTxt = YFactory.tb(infoTxt, icon, new AE() {
+
+			@Override
+			public void run() {
+				YDialog.ok(header.getText(), infoTxt, null);
+			}
+		});
+		return this;
+	}
+
+	/**
+	 * Helpermethod to set at the end a button with addional info
+	 * 
+	 * @param infoTxt
+	 *            the infoTxt to set
+	 */
+	public FormElement setInfoTxt(final String infoTxt) {
+		return setInfoTxt(infoTxt, "info");
+	}
+
+	/**
+	 * @return the element
+	 */
+	public JComponent getElement() {
+		return element;
+	}
+
+	/**
+	 * En/Disable
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public FormElement setEnabled(boolean value) {
+		if (header != null)
+			header.setEnabled(value);
+		element.setEnabled(value);
+		return this;
+	}
+
+	/**
+	 * Check if enabled
+	 * 
+	 * @return
+	 */
+	public boolean isEnabled() {
+		return element.isEnabled();
+	}
+
+	/**
+	 * @return the sorting
+	 */
+	public int getSorting() {
+		return sorting;
+	}
+
+	/**
+	 * @param sorting
+	 *            the sorting to set
+	 */
+	public FormElement setSorting(int sorting) {
+		this.sorting = sorting;
+		return this;
+	}
+}

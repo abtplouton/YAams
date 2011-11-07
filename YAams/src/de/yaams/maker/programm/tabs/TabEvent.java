@@ -25,7 +25,7 @@ public abstract class TabEvent {
 
 		// build vars
 		String uid;
-		HashMap<String, String> parameter = new HashMap<String, String>(), arguments = new HashMap<String, String>();
+		HashMap<String, String> parameter = new HashMap<String, String>();
 		Project p = null;
 		YaTab tab;
 
@@ -111,7 +111,7 @@ public abstract class TabEvent {
 	 * @param data
 	 * @return
 	 */
-	public static String buildParameter(String uid, Project p, HashMap<String, Object> arguments, String... data) {
+	public static String buildParameter(String uid, Project p, HashMap<String, String> arguments, String... data) {
 		StringBuffer s = new StringBuffer(uid);
 
 		// add parameter

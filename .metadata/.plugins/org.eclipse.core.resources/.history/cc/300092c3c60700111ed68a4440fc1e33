@@ -1,0 +1,261 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.awt.GridLayout;
+import java.io.File;
+import java.util.LinkedList;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.SystemHelper;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.form.FormButton;
+import de.yaams.maker.helper.gui.form.FormCheckbox;
+import de.yaams.maker.helper.gui.form.FormElement;
+import de.yaams.maker.helper.gui.form.FormElementChangeListener;
+import de.yaams.maker.helper.gui.form.FormInfo;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.integration.EditorIntegration;
+import de.yaams.maker.programm.environment.YLevel;
+
+/**
+ * @author abby
+ * 
+ */
+public class PluginPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4570354101992039447L;
+
+	protected LinkedList<String> actives;
+
+	/**
+	 * @param arg0
+	 */
+	public PluginPanel() {
+		super(new GridLayout(1, 1));
+
+		reload();
+		actives = new LinkedList<String>();
+	}
+
+	/**
+	 * Reload the tab content
+	 */
+	protected void reload() {
+		actives.clear();
+		
+		// build form
+		final FormBuilder f = new FormBuilder("plugins.details");
+
+		// has plugins?
+		if (PluginLoader.getPlugins().size() == 0) {
+			f.addElement("basic.error", new FormInfo("", I18N.t("Kein Plugin gefunden. Wählen Online prüfen aus, um die Liste "
+					+ "zu aktualisieren, oder füge manuell Plugins hinzu.")).setIcon("plugin_error", 32));
+		}
+
+		// run over all
+		for (final String id : PluginLoader.getPlugins().keySet()) {
+			// was added before?
+			if (!f.existElement("basic." + id + "_box")) {
+				// return;
+			}
+
+			final PluginInfo2 i = PluginLoader.getPlugins().get(id);
+
+			f.addElement("basic." + id + "_box", new FormCheckbox(i.getTitle(), false).addChangeListener(new FormElementChangeListener() {
+
+				@Override
+				public void stateChanged(FormElement form) {
+					JCheckBox c = (JCheckBox) form.getElement();
+					// add or remove it?
+					if (c.isSelected()) {
+						actives.add(id);
+					} else {
+						actives.remove(id);
+					}
+
+				}
+			}));
+
+			f.addElement("basic." + id + "_detail", new FormElement(null) {
+
+				@Override
+				protected JComponent getInternElement() {
+					return i.getStatusMessage();
+				}
+
+				@Override
+				public String getContentAsString() {
+					return "";
+				}
+			});
+
+			f.addElement("basic." + id + "_moreinfo", new FormButton(I18N.t("Details"), null, new AE() {
+
+				@Override
+				public void run() {
+					YDialog.showForm(i.getTitle(), i.getImg(), i.getMoreInfo());
+
+				}
+			}));
+		}
+
+		// add buttons
+		// add button
+		f.addButton("change", YFactory.installTooltip(YFactory.b(I18N.t("Wechseln"), "reload", new AE() {
+
+			@Override
+			public void run() {
+				for (String key : PluginLoader.getPlugins().keySet()) {
+					JCheckBox c = (JCheckBox) f.getElement("basic." + key + "_box").getElement();
+					c.setSelected(!c.isSelected());
+
+				}
+
+			}
+		}), I18N.t("Wechselt den Stand der ausgewählten Plugins"), "reload"));
+
+		// add button
+		f.addButton("check", YFactory.b(I18N.t("Online prüfen"), "search", new AE() {
+
+			@Override
+			public void run() {
+				PluginLoader.installOnlineInfo(true);
+				// update plugin view
+				reload();
+			}
+		}));
+
+		// add button
+		if (YLevel.IS_ADVANCED) {
+			f.addButton("folder", YFactory.b(I18N.t("Pluginordner"), "folder_search", new AE() {
+
+				@Override
+				public void run() {
+					SystemHelper.viewFile(PluginLoader.folder);
+				}
+			}));
+			// add button
+			f.addButton("enable", YFactory.b(I18N.t("Aktivieren"), "add", new AE() {
+
+				@Override
+				public void run() {
+					// inform user
+					if (checkSelected()) {
+						// run over all
+						for (String key : actives) {
+							PluginLoader.getPlugins().get(key).setDisabled(false);
+						}
+					}
+				}
+			}));
+
+			// add button
+			f.addButton("disable", YFactory.b(I18N.t("Deaktivieren"), "del", new AE() {
+
+				@Override
+				public void run() {
+					// inform user
+					if (checkSelected()) {
+						// run over all
+						for (String key : actives) {
+							PluginLoader.getPlugins().get(key).setDisabled(true);
+						}
+					}
+				}
+			}));
+		}
+
+		// add button
+		f.addButton("del", YFactory.b(I18N.t("Deinstallieren"), "plugin_del", new AE() {
+
+			@Override
+			public void run() {
+				// inform user
+				if (checkSelected()) {
+					// run over all
+					for (String key : actives) {
+						PluginLoader.uninstall(key);
+					}
+					SystemHelper.restart();
+				}
+			}
+		}));
+
+		// add button
+		f.addButton("install", YFactory.installTooltip(YFactory.b(I18N.t("Installieren"), "setup", new AE() {
+
+			@Override
+			public void run() {
+				// inform user
+				if (checkSelected()) {
+					// run over all
+					for (String key : actives) {
+						PluginLoader.installUpdate(key);
+					}
+					SystemHelper.restart();
+				}
+			}
+		}), I18N.t("Installiert bzw. aktualisiert die Ausgewählten"), "setup"));
+
+		// add button
+		f.addButton("open", YFactory.installTooltip(YFactory.b(I18N.t("Importieren"), "folder", new AE() {
+
+			@Override
+			public void run() {
+				File[] fl = EditorIntegration.openDialog(true, false, new FileFilter() {
+
+					@Override
+					public String getDescription() {
+						return "*.yex";
+					}
+
+					@Override
+					public boolean accept(File f) {
+						return f.isDirectory() || f.getName().endsWith(".yex");
+					}
+				});
+				// copy all
+				if (fl.length > 0) {
+					for (File f : fl) {
+						String id = f.getName().substring(0, f.getName().indexOf("."));
+						FileHelper.copy(f, new File(PluginLoader.folder, id + ".yex"));
+					}
+					SystemHelper.restart();
+				}
+
+			}
+		}), I18N.t("Öffnet einen Dialog und importiert, die angegeben .yex Dateien."), "folder"));
+
+		// add it
+		removeAll();
+		add(f.getPanel(true));
+		invalidate();
+		revalidate();
+	}
+
+	/**
+	 * Helpermethod to check, if somethink selected
+	 * 
+	 * @return
+	 */
+	protected boolean checkSelected() {
+		if (actives.size() == 0) {
+			YDialog.ok(I18N.t("Kein Plugin ausgewählt"),
+					I18N.t("Um die Operation ausführen zu können, muss mindestens 1 Plugin ausgewählt werden. "), "plugin");
+		}
+		return actives.size() > 0;
+	}
+}

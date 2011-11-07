@@ -1,0 +1,169 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.form;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.AE;
+
+/**
+ * @author abt
+ */
+public class FormComboBox extends FormSaveElement {
+
+	protected DefaultComboBoxModel model;
+	protected String defaultValue;
+	protected String[] values;
+	protected JComboBox box;
+
+	/**
+	 * 
+	 * Create a new ComboBoxSetting
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @param values
+	 */
+	public FormComboBox(final String title) {
+		super(title);
+	}
+
+	/**
+	 * 
+	 * Create a new ComboBoxSetting
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @param values
+	 */
+	public FormComboBox(final String title, final String[] values) {
+		super(title);
+
+		// set it
+		this.values = values;
+		create(new DefaultComboBoxModel(values));
+	}
+
+	/**
+	 * Create a new ComboBoxSetting
+	 * 
+	 * @param name
+	 *            /title, box
+	 * @param values
+	 * @param titles
+	 *            , translations
+	 */
+	public FormComboBox(final String title, final String[] values, final String[] titles) {
+		super(title);
+
+		// set it
+		this.values = values;
+		create(new DefaultComboBoxModel(titles));
+	}
+
+	/**
+	 * Create a new ComboBoxSetting
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @param defaultComboBoxModel
+	 */
+	public FormComboBox(final String title, final DefaultComboBoxModel model) {
+		super(title);
+		create(model);
+	}
+
+	/**
+	 * @param model
+	 */
+	protected void create(final DefaultComboBoxModel model) {
+		this.model = model;
+		
+		//has elements?
+		if (model == null || model.getSize()==0){
+			box = new JComboBox();
+			element = new JLabel(I18N.t("Keine Elemente angegeben"));
+		} else {
+		
+		box = new JComboBox(model);
+		element = box;
+		}
+	}
+
+	/**
+	 * Select the right field
+	 * 
+	 * @param select
+	 */
+	public FormComboBox selectField(final String select) {
+		if (select == null) {
+			return this;
+		}
+
+		if (values == null) {
+			// found nothing?
+			if (model.getIndexOf(select) == -1) {
+				// add it
+				model.addElement("!" + select + "!");
+			}
+			box.setSelectedIndex(model.getIndexOf(select));
+		} else {
+			// look for the right element
+			for (int i = 0, l = values.length; i < l; i++) {
+				if (values[i].equals(select)) {
+					box.setSelectedIndex(i);
+					return this;
+				}
+			}
+
+			// found nothing?
+			// TODO fix new element
+		}
+
+		return this;
+	}
+
+	/**
+	 * @return the box
+	 */
+	public JComboBox getBox() {
+		return box;
+	}
+
+	/**
+	 * @return the element
+	 */
+	@Override
+	public JComponent getElement(final boolean withSaveFunction) {
+		if (withSaveFunction) {
+			box.addActionListener(new AE() {
+
+				@Override
+				public void run() {
+					// save it
+					informListeners();
+				}
+			});
+		}
+		return super.getElement(withSaveFunction);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.helper.gui.form.FormElement#getContentAsString()
+	 */
+	@Override
+	public String getContentAsString() {
+		if (values == null) {
+			return model.getSelectedItem().toString();
+		} else {
+			return values[box.getSelectedIndex()];
+		}
+	}
+
+}

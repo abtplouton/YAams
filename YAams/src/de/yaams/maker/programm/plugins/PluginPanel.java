@@ -17,16 +17,15 @@ import de.yaams.maker.helper.SystemHelper;
 import de.yaams.maker.helper.gui.AE;
 import de.yaams.maker.helper.gui.YDialog;
 import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.form.FormButton;
 import de.yaams.maker.helper.gui.form.FormCheckbox;
 import de.yaams.maker.helper.gui.form.FormElement;
 import de.yaams.maker.helper.gui.form.FormElementChangeListener;
 import de.yaams.maker.helper.gui.form.FormInfo;
+import de.yaams.maker.helper.gui.form.FormSwing;
 import de.yaams.maker.helper.gui.form.core.FormBuilder;
 import de.yaams.maker.helper.integration.EditorIntegration;
-import de.yaams.maker.programm.YAamsCore;
 import de.yaams.maker.programm.environment.YLevel;
-import de.yaams.maker.programm.plugins.core.PluginInfo;
-import de.yaams.maker.programm.plugins.core.PluginManager;
 
 /**
  * @author abby
@@ -34,36 +33,81 @@ import de.yaams.maker.programm.plugins.core.PluginManager;
  */
 public class PluginPanel extends JPanel {
 
-	private static final long serialVersionUID = 8336432260638860312L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4570354101992039447L;
 
 	protected LinkedList<String> actives;
 
 	/**
-	 * 
+	 * @param arg0
 	 */
 	public PluginPanel() {
 		super(new GridLayout(1, 1));
 
-		// prepare
 		actives = new LinkedList<String>();
+		reload();
+	}
 
-		final FormBuilder f = new FormBuilder("plugins");
+	/**
+	 * Reload the tab content
+	 */
+	protected void reload() {
+		actives.clear();
 
-		// run over all plugins
-		if (PluginManager.getInfo().keySet().size() > 0) {
-			// f.getHeader("basic").setColumn(4);
-			buildAllPlugins(f);
-		} else {
+		// build form
+		final FormBuilder f = new FormBuilder("plugins.details");
+		f.getHeader("basic").setColumn(6);
+
+		// has plugins?
+		if (PluginLoader.getPlugins().size() == 0) {
 			f.addElement("basic.error", new FormInfo("", I18N.t("Kein Plugin gefunden. Wählen Online prüfen aus, um die Liste "
 					+ "zu aktualisieren, oder füge manuell Plugins hinzu.")).setIcon("plugin_error", 32));
 		}
 
+		// run over all
+		for (final String id : PluginLoader.getPlugins().keySet()) {
+			// was added before?
+			if (!f.existElement("basic." + id + "_box")) {
+				// return;
+			}
+
+			final PluginInfo i = PluginLoader.getPlugins().get(id);
+
+			f.addElement("basic." + id + "_box", new FormCheckbox(i.getTitle(), false).addChangeListener(new FormElementChangeListener() {
+
+				@Override
+				public void stateChanged(FormElement form) {
+					JCheckBox c = (JCheckBox) form.getElement();
+					// add or remove it?
+					if (c.isSelected()) {
+						actives.add(id);
+					} else {
+						actives.remove(id);
+					}
+
+				}
+			}));
+
+			f.addElement("basic." + id + "_detail", new FormSwing("", i.getStatusMessage()));
+			f.addElement("basic." + id + "_moreinfo", new FormButton(I18N.t("Details"), i.getImg(), new AE() {
+
+				@Override
+				public void run() {
+					YDialog.showForm(i.getTitle(), i.getImg(), i.getMoreInfo());
+
+				}
+			}));
+		}
+
+		// add buttons
 		// add button
 		f.addButton("change", YFactory.installTooltip(YFactory.b(I18N.t("Wechseln"), "reload", new AE() {
 
 			@Override
 			public void run() {
-				for (String key : PluginManager.getInfo().keySet()) {
+				for (String key : PluginLoader.getPlugins().keySet()) {
 					JCheckBox c = (JCheckBox) f.getElement("basic." + key + "_box").getElement();
 					c.setSelected(!c.isSelected());
 
@@ -77,9 +121,9 @@ public class PluginPanel extends JPanel {
 
 			@Override
 			public void run() {
-				PluginManager.installOnlineInfo(true);
+				PluginLoader.installOnlineInfo(true);
 				// update plugin view
-				YDialog.ok(I18N.t("Bitte Tab neuaufrufen"), "", "plugin_reload");
+				reload();
 			}
 		}));
 
@@ -89,41 +133,38 @@ public class PluginPanel extends JPanel {
 
 				@Override
 				public void run() {
-					SystemHelper.viewFile(PluginManager.getFolder().get(0).getFolder());
+					SystemHelper.viewFile(PluginLoader.folder);
 				}
 			}));
-			// // add button
-			// f.addButton("enable", YFactory.b(I18N.t("Aktivieren"), "add", new
-			// AE() {
-			//
-			// @Override
-			// public void run() {
-			// // inform user
-			// if (checkSelected()) {
-			// // run over all
-			// for (String key : actives) {
-			// PluginManager.enable(key);
-			// }
-			// }
-			// }
-			// }));
-			//
-			// // add button
-			// f.addButton("disable", YFactory.b(I18N.t("Deaktivieren"), "del",
-			// new
-			// AE() {
-			//
-			// @Override
-			// public void run() {
-			// // inform user
-			// if (checkSelected()) {
-			// // run over all
-			// for (String key : actives) {
-			// PluginManager.disable(key);
-			// }
-			// }
-			// }
-			// }));
+			// add button
+			f.addButton("enable", YFactory.b(I18N.t("Aktivieren"), "add", new AE() {
+
+				@Override
+				public void run() {
+					// inform user
+					if (checkSelected()) {
+						// run over all
+						for (String key : actives) {
+							PluginLoader.getPlugins().get(key).setDisabled(false);
+						}
+					}
+				}
+			}));
+
+			// add button
+			f.addButton("disable", YFactory.b(I18N.t("Deaktivieren"), "del", new AE() {
+
+				@Override
+				public void run() {
+					// inform user
+					if (checkSelected()) {
+						// run over all
+						for (String key : actives) {
+							PluginLoader.getPlugins().get(key).setDisabled(true);
+						}
+					}
+				}
+			}));
 		}
 
 		// add button
@@ -135,9 +176,9 @@ public class PluginPanel extends JPanel {
 				if (checkSelected()) {
 					// run over all
 					for (String key : actives) {
-						PluginManager.uninstall(key);
+						PluginLoader.uninstall(key);
 					}
-					informRestart();
+					SystemHelper.restart();
 				}
 			}
 		}));
@@ -151,11 +192,9 @@ public class PluginPanel extends JPanel {
 				if (checkSelected()) {
 					// run over all
 					for (String key : actives) {
-						if (PluginManager.getInfo(key).isUpdateAvaible()) {
-							PluginManager.getInfo(key).updateInstall();
-						}
+						PluginLoader.installFromOnline(key);
 					}
-					informRestart();
+					SystemHelper.restart();
 				}
 			}
 		}), I18N.t("Installiert bzw. aktualisiert die Ausgewählten"), "setup"));
@@ -180,71 +219,20 @@ public class PluginPanel extends JPanel {
 				// copy all
 				if (fl.length > 0) {
 					for (File f : fl) {
-						String id = f.getName().substring(0, f.getName().indexOf("."));
-						FileHelper.copy(f, new File(PluginManager.getFolder().get(0).getFolder(), id + ".yex"));
+						String id = PluginLoader.getIDForFile(f);
+						FileHelper.copy(f, new File(PluginLoader.folder, id + ".yex"));
 					}
-					informRestart();
+					SystemHelper.restart();
 				}
 
 			}
 		}), I18N.t("Öffnet einen Dialog und importiert, die angegeben .yex Dateien."), "folder"));
 
 		// add it
+		removeAll();
 		add(f.getPanel(true));
-	}
-
-	/**
-	 * 
-	 */
-	protected void informRestart() {
-		YDialog.ok(I18N.t("Damit die Änderungen übernommen werden können, muss {0} neugestartet werden.", YAamsCore.TITLE), "",
-				"plugin_restart");
-	}
-
-	/**
-	 * Add all exist plugin to the formbuilder
-	 * 
-	 * @param f
-	 */
-	public void buildAllPlugins(final FormBuilder f) {
-		for (final String key : PluginManager.getInfo().keySet()) {
-
-			addPlugin(f, key);
-		}
-	}
-
-	/**
-	 * @param f
-	 * @param id
-	 */
-	protected void addPlugin(final FormBuilder f, final String id) {
-		// was added before?
-		if (!f.existElement("basic." + id + "_box")) {
-			// return;
-		}
-
-		PluginInfo i = PluginManager.getInfo(id);
-
-		// build update button
-		i.getButtons();
-
-		f.addElement("basic." + id + "_box", new FormCheckbox("<html><b>" + i.getTitle() + "</b><br>" + i.getDesc(), false)
-				.addChangeListener(new FormElementChangeListener() {
-
-					@Override
-					public void stateChanged(FormElement form) {
-						JCheckBox c = (JCheckBox) form.getElement();
-						// add or remove it?
-						if (c.isSelected()) {
-							actives.add(id);
-						} else {
-							actives.remove(id);
-						}
-
-					}
-				}));
-		f.addElement("basic." + id + "_name", new FormInfo("", i.getUpdateMessage()));// .setIcon(i.getIcon(),
-																						// 32));
+		invalidate();
+		revalidate();
 	}
 
 	/**

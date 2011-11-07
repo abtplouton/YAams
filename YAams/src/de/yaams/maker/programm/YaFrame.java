@@ -214,9 +214,9 @@ public class YaFrame extends YFrame {
 	 * @param text
 	 * @param icon
 	 */
-	public static void setTooltip(String text, String icon) {
+	public static void setTooltip(String text, Object icon) {
 		get().getTooltip().setStatus(text);
-		get().getTooltip().setStatusIcon(icon == null ? null : IconCache.get(icon));
+		get().getTooltip().setStatusIcon(icon == null ? null : IconCache.getS(icon, IconCache.SIZE));
 	}
 
 	/**
@@ -225,10 +225,10 @@ public class YaFrame extends YFrame {
 	protected void savePos() {
 		// save window position
 
-		Setting.set("yaframe.x", this.getX());
-		Setting.set("yaframe.y", this.getY());
-		Setting.set("yaframe.width", this.getWidth());
-		Setting.set("yaframe.height", this.getHeight());
+		Setting.set("yaframe.x", getX());
+		Setting.set("yaframe.y", getY());
+		Setting.set("yaframe.width", getWidth());
+		Setting.set("yaframe.height", getHeight());
 		Setting.set("yaframe.state", getExtendedState());
 
 	}
@@ -333,7 +333,7 @@ public class YaFrame extends YFrame {
 						// inform
 						ExtentionManagement.work("yaframe.openTab", JavaHelper.createHashStringObj("tab", tab));
 						// frame.tabs.put(tab.getID(), tab);
-						tab.getDocument(doccom, uid);
+						tab.getDocument(doccom, id);
 
 						// overwrite with fav?
 						if (fav != null) {
@@ -544,6 +544,8 @@ public class YaFrame extends YFrame {
 	}
 
 	/**
+	 * Get the spec. open tab
+	 * 
 	 * @return the tabs
 	 */
 	public YaTab getOpenTab(String id) {
@@ -555,6 +557,22 @@ public class YaFrame extends YFrame {
 		}
 
 		return (YaTab) dc.getComponent();
+	}
+
+	/**
+	 * Get all spec. open tab
+	 * 
+	 * @return the tabs
+	 */
+	public ArrayList<YaTab> getAllOpenTabs() {
+		ArrayList<YaTab> tabs = new ArrayList<YaTab>();
+
+		// run over all
+		for (int i = 0, l = frame.pane.getDocumentCount(); i < l; i++) {
+			tabs.add((YaTab) frame.pane.getDocumentAt(i).getComponent());
+		}
+
+		return tabs;
 	}
 
 	/**

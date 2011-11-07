@@ -1,0 +1,29 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.form;
+
+/**
+ * @author abby
+ *
+ */
+public class FormSwing extends FormElement {
+
+	/**
+	 * @param title
+	 */
+	public FormSwing(String title) {
+		super(title);
+		// TODO Auto-generated constructor stub
+	}
+
+	/* (non-Javadoc)
+	 * @see de.yaams.maker.helper.gui.form.FormElement#getContentAsString()
+	 */
+	@Override
+	public String getContentAsString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -1,0 +1,66 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database.form;
+
+import org.jruby.RubyObject;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.form.FormButton;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+
+/**
+ * @author abby
+ * 
+ */
+public class FormTileset extends FormButton {
+
+	protected RubyObject tileset, passages, priorities, terrain_tags;
+	protected int id;
+
+	/**
+	 * 
+	 * @param tileset
+	 * @param x
+	 * @param y
+	 * @param icon
+	 */
+	public FormTileset(RubyObject tileset, final int id, Object icon) {
+		super("", null, null);
+
+		this.tileset = tileset;
+		passages = (RubyObject) tileset.getInstanceVariable("@passages");
+		priorities = (RubyObject) tileset.getInstanceVariable("@priorities");
+		terrain_tags = (RubyObject) tileset.getInstanceVariable("@terrain_tags");
+
+		System.out.println(passages.inspect());
+		System.out.println(terrain_tags.inspect());
+System.out.println(passages.getInternalVariable("@xsize")+" "+id);
+		
+		button = YFactory.b(I18N.t("{0}x{1}", id % 8 + 1, (id - 384) / 8 + 1), icon, new AE() {
+
+			@Override
+			public void run() {
+				FormBuilder form = new FormBuilder("rgssproject.edit.tileset");
+
+				form.addElement("basic.terrain", new FormTable(I18N.t("Terrain"), terrain_tags, id, 1).setMinMax(0, 7, 1));
+				form.addElement("basic.priorities", new FormTable(I18N.t("Priorität"), priorities, id, 1).setMinMax(0, 5, 1));
+				form.addElement("basic.bush", RubyForm.getBooleanFlag(I18N.t("Buschflag"), passages, id, 0x40));
+				form.addElement("basic.counter", RubyForm.getBooleanFlag(I18N.t("Counter"), passages, id, 0x80));
+				form.addElement("basic.moveup", RubyForm.getBooleanFlag(I18N.t("Kann nicht hoch laufen"), passages, id, 0x08));
+				form.addElement("basic.moveleft", RubyForm.getBooleanFlag(I18N.t("Kann nicht links laufen"), passages, id, 0x02));
+				form.addElement("basic.moveright", RubyForm.getBooleanFlag(I18N.t("Kann nicht rechts laufen"), passages, id, 0x04));
+				form.addElement("basic.movedown", RubyForm.getBooleanFlag(I18N.t("Kann nicht runter laufen"), passages, id, 0x01));
+
+				YDialog.showForm(I18N.t("Editiere {0}x{1}", id % 8 + 1, (id - 384) / 8 + 1), "tileset_opts", form);
+
+			}
+		}, 32);
+		element = button;
+
+	}
+
+}

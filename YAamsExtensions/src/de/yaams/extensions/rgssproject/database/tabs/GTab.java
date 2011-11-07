@@ -19,6 +19,7 @@ import de.yaams.extensions.rgssproject.database.GList;
 import de.yaams.extensions.rgssproject.database.RGSS1Helper;
 import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
 import de.yaams.extensions.rgssproject.database.SystemGObject;
+import de.yaams.maker.helper.Setting;
 import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YFactory;
 import de.yaams.maker.helper.gui.YScrollPane;
@@ -151,6 +152,9 @@ public abstract class GTab extends ProjectTab {
 			} else {
 				buildEmptyView();
 			}
+			// save pos
+			Setting.set(getId() + ".list.pos", id);
+
 		} catch (Throwable t) {
 			YEx.warn("Can not create Tabcontent", t);
 			// build panel
@@ -233,7 +237,7 @@ public abstract class GTab extends ProjectTab {
 	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getDesc(java.lang.Object)
 	 */
 	public String getDesc(final Integer o) {
-		return null;
+		return RGSS1Helper.getDesc(project, type, o);
 	}
 
 	/**
@@ -287,7 +291,11 @@ public abstract class GTab extends ProjectTab {
 		// select?
 		if (arguments.containsKey("select")) {
 			list.getList().setSelectedIndex(Integer.valueOf(arguments.get("select")) - 1);
+			return;
 		}
+
+		// select save?
+		list.getList().setSelectedIndex(Setting.get(getId() + ".list.pos", 0));
 
 	}
 }

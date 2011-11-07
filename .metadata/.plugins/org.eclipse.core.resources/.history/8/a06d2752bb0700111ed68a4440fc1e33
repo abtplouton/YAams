@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.awt.LayoutManager;
+
+import javax.swing.JPanel;
+
+/**
+ * @author abby
+ *
+ */
+public class PluginPanel extends JPanel {
+
+	/**
+	 * @param arg0
+	 */
+	public PluginPanel(LayoutManager arg0) {
+		super(new GridLayout(1,1));
+	}
+
+}

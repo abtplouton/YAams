@@ -1,0 +1,48 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.awt.LayoutManager;
+
+import javax.swing.JPanel;
+
+/**
+ * @author abby
+ *
+ */
+public class PluginPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	public PluginPanel() {
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param arg0
+	 */
+	public PluginPanel(LayoutManager arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param arg0
+	 */
+	public PluginPanel(boolean arg0) {
+		super(arg0);
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param arg0
+	 * @param arg1
+	 */
+	public PluginPanel(LayoutManager arg0, boolean arg1) {
+		super(arg0, arg1);
+		// TODO Auto-generated constructor stub
+	}
+
+}

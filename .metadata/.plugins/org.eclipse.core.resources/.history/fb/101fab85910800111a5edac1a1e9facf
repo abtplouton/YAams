@@ -1,0 +1,52 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.rightclick;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.icons.IconCache;
+
+/**
+ * @author abby
+ * 
+ */
+public abstract class BaseAction extends AbstractAction {
+
+	private static final long serialVersionUID = 7951379606124818102L;
+
+	/**
+	 * @param arg0
+	 * @param arg1
+	 */
+	public BaseAction(String name, String icon) {
+		super(name, IconCache.get(icon));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		try {
+			run(e);
+		} catch (Throwable t) {
+			YEx.info("Can not perform action ", t);
+		}
+
+	}
+
+	/**
+	 * Run the actions
+	 * 
+	 * @param e
+	 */
+	protected abstract void run(ActionEvent e);
+
+}

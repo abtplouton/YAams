@@ -1,0 +1,198 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.wizard.core;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.SystemHelper;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.YHeader;
+import de.yaams.maker.programm.YaFrame;
+
+/**
+ * @author Praktikant
+ * 
+ */
+public class WizardFrame extends JDialog {
+
+	private static final long serialVersionUID = 5851875404052666947L;
+	protected ArrayList<WizardBasePage> pages;
+	protected int actPage;
+
+	protected JPanel main, buttons, cardpanel;
+	protected CardLayout cardlayout;
+	protected ImgComp img;
+	protected JButton back, next;
+	protected YHeader header;
+	protected transient AE ae;
+
+	/**
+	 * 
+	 */
+	public WizardFrame(ArrayList<WizardBasePage> pages, AE ae) {
+		super(YaFrame.get(), "");
+		this.pages = pages;
+		this.ae = ae;
+		actPage = 0;
+
+		buildMainGui();
+		buildGui();
+		setPreferredSize(new Dimension(550, 500));
+
+		pack();
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setVisible(true);
+	}
+
+	/**
+	 * Build the main menu
+	 */
+	public void buildMainGui() {
+		setLayout(new BorderLayout());
+
+		// add img
+		img = new ImgComp();
+		add(img, BorderLayout.WEST);
+
+		// build header
+		header = new YHeader("");
+
+		// load layout
+		cardlayout = new CardLayout();
+		cardpanel = new JPanel(cardlayout);
+		for (WizardBasePage wbp : pages) {
+			cardpanel.add(wbp.getForm(), wbp.getTitle());
+		}
+
+		// add main
+		main = new JPanel(new BorderLayout());
+		main.add(header, BorderLayout.NORTH);
+		main.add(cardpanel, BorderLayout.CENTER);
+		main.add(new JSeparator(), BorderLayout.SOUTH);
+		add(main, BorderLayout.CENTER);
+
+		// build buttons
+		buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+		back = YFactory.b(I18N.t("< Zurück"), null, new AE() {
+
+			@Override
+			public void run() {
+				actPage--;
+				buildGui();
+			}
+		});
+		buttons.add(back);
+
+		next = YFactory.b("", null, new AE() {
+
+			@Override
+			public void run() {
+				if (actPage == pages.size() - 1) {
+					finish();
+				} else {
+					actPage++;
+					buildGui();
+
+				}
+			}
+		});
+		buttons.add(next);
+
+		add(buttons, BorderLayout.SOUTH);
+	}
+
+	/**
+	 * Build the menu for the act tab
+	 */
+	public void buildGui() {
+		WizardBasePage p = pages.get(actPage);
+
+		// set basics
+		img.setImg(p.getImage());
+		header.setText(p.getTitle(), p.getIcon());
+		cardlayout.show(cardpanel, p.getTitle());
+		getRootPane().revalidate();
+		setTitle(p.getTitle());
+
+		// set buttons
+		back.setEnabled(actPage > 0);
+		next.setText(I18N.t(actPage == pages.size() - 1 ? "Fertig stellen" : "Weiter >"));
+	}
+
+	/**
+	 * If the wizard exit, use the setting and finish all pages.
+	 */
+	public void finish() {
+		// build it
+		for (WizardBasePage wbp : pages) {
+			wbp.finish();
+		}
+
+		// clear it
+		pages.clear();
+		ae.actionPerformed(null);
+		setVisible(false);
+		dispose();
+	}
+
+	class ImgComp extends JComponent {
+
+		private static final long serialVersionUID = -3294897747945329105L;
+		protected BufferedImage img;
+
+		/**
+		 * Create a new
+		 */
+		public ImgComp() {
+			super();
+			setPreferredSize(new Dimension(164, 360));
+			setBackground(new Color(6, 32, 83));
+		}
+
+		@Override
+		public void paintComponent(Graphics g) {
+			g.fillRect(0, 0, 300, 1000);
+
+			// img
+			if (img != null) {
+				g.drawImage(img, 0, 0, null);
+			}
+
+			// navi
+			g.setColor(Color.white);
+			for (int i = 0, l = pages.size(); i < l; i++) {
+				g.drawString((actPage == i ? "> " : "") + pages.get(i).getTitle(), 20, 30 + i * 12);
+
+			}
+		}
+
+		/**
+		 * @param img
+		 *            the img to set
+		 */
+		public void setImg(BufferedImage img) {
+			this.img = img;
+			repaint();
+			invalidate();
+		}
+	}
+}

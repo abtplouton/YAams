@@ -1,0 +1,163 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database.tabs;
+
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.jruby.RubyArray;
+import org.jruby.RubyObject;
+import org.jruby.RubyString;
+
+import de.yaams.extensions.rgssproject.RGSSProjectHelper;
+import de.yaams.extensions.rgssproject.RTP;
+import de.yaams.extensions.rgssproject.database.JavaTable;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
+import de.yaams.extensions.rgssproject.database.RGSS1Load;
+import de.yaams.extensions.rgssproject.database.form.FormGraphEle;
+import de.yaams.extensions.rgssproject.database.form.FormTileset;
+import de.yaams.extensions.rgssproject.database.form.RubyForm;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.form.FormElement;
+import de.yaams.maker.helper.gui.form.FormElementChangeListener;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.gui.form.core.FormHeader;
+import de.yaams.maker.programm.project.Project;
+import de.yaams.maker.programm.ress.RessRess;
+
+/**
+ * @author abt
+ * 
+ */
+public class TilesetTab extends GTab {
+	private static final long serialVersionUID = -7224278425132595022L;
+
+	protected HashMap<String, Image> iconcache;
+
+	/**
+	 * Create a new ItemTab
+	 * 
+	 * @param project
+	 */
+	public TilesetTab(final Project project) {
+		super(project);
+		iconcache = new HashMap<String, Image>();
+
+		loadFile(Type.TILESET);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.genericLoader.GTab#getInternContent(int)
+	 */
+	@Override
+	public void buildForm(FormBuilder form, int id) {
+		// prepare
+		RubyObject act = elements.get(id).getObject();
+
+		// build basics
+		form.addHeader("basic", new FormHeader(I18N.t("Grundlegenes"), getIcon() + "_info"));
+		form.addElement("basic.name", RubyForm.getString("Name", "@name", act));
+
+		// build fog
+		form.addHeader("graphic", new FormHeader(I18N.t("Grafiken"), "graphic").setColumn(4));
+		form.addElement("graphic.tile", new FormGraphEle(I18N.t("Tileset"), project, RTP.TILESET, act, "@tileset_name", null));
+		// form.addElement("graphic.atile", RubyForm.getError("Autotile",
+		// "@autotile_names", act));
+		form.addElement("graphic.pano", new FormGraphEle(I18N.t("Panorama"), project, RTP.PANORAMA, act, "@panorama_name", "@panorama_hue"));
+		form.addElement("graphic.battle", new FormGraphEle(I18N.t("Battle Back"), project, RTP.BATTLEBACK, act, "@battleback_name", null));
+
+		final RubyArray ra = (RubyArray) act.getInstanceVariable("@autotile_names");
+		for (int i = 0; i < 7; i++) {
+			final int j = i;
+			form.addElement(
+					"graphic.atile" + i,
+					new FormGraphEle(I18N.t("Autotile {0}", i), project, RTP.AUTOTILE, RubyString.newString(ra.getRuntime(),
+							(String) ra.get(i)), i, null).setSorting(i + 1).addChangeListener(new FormElementChangeListener() {
+
+						@Override
+						public void stateChanged(FormElement form) {
+							ra.remove(j);
+							ra.add(j, form.getContentAsString());
+
+						}
+					}));
+		}
+
+		// build fog
+		form.addHeader("fog", new FormHeader(I18N.t("Nebel"), "info").setColumn(6));
+		form.addElement("fog.afog", new FormGraphEle(I18N.t("Fog"), project, RTP.PANORAMA, act, "@fog_name", "@fog_hue"));
+		form.addElement("fog.opa", RubyForm.getNumber(I18N.t("Opacity"), act, "@fog_opacity").setMinMax(0, 255, 1));
+		form.addElement(
+				"fog.blend",
+				RubyForm.getComboBoxNum(I18N.t("Blending Mode"), new String[] { "0", "1", "2" }, new String[] { "Normal", "Addition",
+						"Subtraction" }, act, "@fog_blend_type"));
+		form.addElement("fog.zoom", RubyForm.getNumber(I18N.t("Zoom"), act, "@fog_zoom"));
+		form.addElement("fog.sx", RubyForm.getNumber(I18N.t("SX"), act, "@fog_sx").setInfoTxt(I18N.t("(automatic X-axis scrolling speed)")));
+		form.addElement("fog.sy", RubyForm.getNumber(I18N.t("SY"), act, "@fog_sy").setInfoTxt(I18N.t("(automatic X-axis scrolling speed)")));
+
+		// build panel
+		form.addHeader("tileset", new FormHeader(I18N.t("Tileset"), "tileset").setColumn(16));
+		// load tileset
+		ArrayList<BufferedImage> img = RGSS1Load.loadTilesetAsImage(project, id);
+
+		// scale?
+		JavaTable table = new JavaTable(act.getInstanceVariable("@passages"));
+		int lg = img.size()+384;
+		if (lg != table.getX()) {
+			System.out.println("rescale to " + lg + " " + table.getX());
+			table.setX(lg);
+			new JavaTable(act.getInstanceVariable("@priorities")).setX(lg);
+			new JavaTable(act.getInstanceVariable("@terrain_tags")).setX(lg);
+		}
+
+		for (int i = 0, l = img.size(); i < l; i++) {
+			form.addElement("tileset." + i, new FormTileset(act, i + 384, img.get(i)).setSorting(i));
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.genericLoader.GTab#getText(java.lang.Integer)
+	 */
+	@Override
+	public Object getText(final Integer value) {
+		return elements.get(value).getName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getDesc(java.lang.Object)
+	 */
+	@Override
+	public String getDesc(final Integer o) {
+		final String file = elements.get(o).getObject().getInstanceVariable("@tileset_name").toString();
+
+		// has icon?
+		if (file == null || file.length() == 0) {
+			return "-";
+		}
+		final BufferedImage i = RessRess.getGraphic(project, RTP.TILESET, file);
+
+		return I18N.t("{0}x{1}", i.getWidth() / 32, i.getHeight() / 32);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.genericLoader.GTab#createObject()
+	 */
+	@Override
+	public RubyObject createObject() {
+		return (RubyObject) RGSSProjectHelper.getInterpreter(project).runScriptlet("return RPG::Tileset.new");
+	}
+
+}

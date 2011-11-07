@@ -8,7 +8,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import de.yaams.maker.helper.gui.rightclick.YRightClickMenu;
+import de.yaams.maker.helper.gui.rightclick.YRightClickMenuText;
 
 /**
  * @author Nebli
@@ -26,7 +26,7 @@ public class FormTextField extends FormSaveElement {
 		super(title);
 		
 		field = new JTextField();
-		YRightClickMenu.installRightClickMenu(field);
+		YRightClickMenuText.install(field);
 		element = field;
 		field.setText(content);
 	}

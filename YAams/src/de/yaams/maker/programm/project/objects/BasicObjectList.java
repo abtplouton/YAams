@@ -36,7 +36,7 @@ public class BasicObjectList extends YBasisListElementArrayList {
 	 * @see de.yaams.maker.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {
+	public void add() {
 		add(bom.createNewObject());
 	}
 
@@ -46,7 +46,8 @@ public class BasicObjectList extends YBasisListElementArrayList {
 	 * @see de.yaams.maker.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/*
 	 * (non-Javadoc)

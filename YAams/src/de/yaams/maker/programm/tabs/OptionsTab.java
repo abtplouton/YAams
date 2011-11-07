@@ -34,7 +34,7 @@ import de.yaams.maker.helper.gui.tabs.ProjectSplitTab;
 import de.yaams.maker.helper.gui.tabs.SplitActionListElement;
 import de.yaams.maker.programm.YAamsCore;
 import de.yaams.maker.programm.environment.YLevel;
-import de.yaams.maker.programm.plugins.core.PluginManager;
+import de.yaams.maker.programm.plugins.PluginLoader;
 import de.yaams.maker.programm.project.Project;
 
 /**
@@ -144,10 +144,10 @@ public class OptionsTab extends ProjectSplitTab {
 
 		// add plugins
 		f.addHeader("plugins", new FormHeader(I18N.t("Plugins"), "plugin").setColumn(8));
-		for (String key : PluginManager.getInfo().keySet()) {
-			f.addElement("plugins." + key, new FormInfo("", PluginManager.getInfo(key).getTitle()));
+		for (String key : PluginLoader.getPlugins().keySet()) {
+			f.addElement("plugins." + key, new FormInfo("", PluginLoader.get(key).getTitle()));
 		}
-		if (PluginManager.getInfo().keySet().size() == 1) {
+		if (PluginLoader.getPlugins().keySet().size() <= 1) {
 			f.addElement("plugins.znone", new FormInfo("", I18N.t("Keine Plugins gefunden. Installiere zuerst welche")).setInfoTxt(I18N
 					.t("Öffne zur Installation den Katalog vom Starttab und wähle die Plugins aus. Danach musst du YAams neustarten.")));
 		}

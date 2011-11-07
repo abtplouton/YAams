@@ -97,7 +97,8 @@ public abstract class SimpleObjectManagement extends BasicObjectManager {
 	 */
 	@Override
 	public String getTabId(BasicObject o) {
-		return TabEvent.buildParameter(getTabUId(), project, JavaHelper.createHashStringObj("selected", objects.indexOf(o)), "obj", ObjID);
+		return TabEvent.buildParameter(getTabUId(), project, JavaHelper.createHashString("selected", Integer.toString(objects.indexOf(o))),
+				"obj", ObjID);
 	}
 
 	/*

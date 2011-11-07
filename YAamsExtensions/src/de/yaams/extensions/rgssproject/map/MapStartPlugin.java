@@ -4,7 +4,7 @@
 package de.yaams.extensions.rgssproject.map;
 
 import de.yaams.maker.helper.gui.YMessagesDialog;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 
 /**
  * @author abt
@@ -31,7 +31,7 @@ public class MapStartPlugin extends BasePlugin {
 	 */
 	@Override
 	public boolean useable(YMessagesDialog md) {
-		return isMinVersionInstall("core", 0.004, md) && isMinVersionInstall("database", 0.013, md);
+		return isVersionInstall("core", 0.6, 0.7, md) && isVersionInstall("database", 0.6, 0.7, md);
 	}
 
 }

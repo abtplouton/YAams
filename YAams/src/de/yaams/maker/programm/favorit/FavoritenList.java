@@ -46,7 +46,8 @@ public class FavoritenList extends YBasisListElementArrayList {
 	 * @see de.yaams.maker.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {}
+	public void add() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -54,7 +55,8 @@ public class FavoritenList extends YBasisListElementArrayList {
 	 * @see de.yaams.maker.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/*
 	 * (non-Javadoc)

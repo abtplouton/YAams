@@ -14,20 +14,21 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.gui.AE;
 import de.yaams.maker.helper.gui.YFactory;
-import de.yaams.maker.helper.gui.YFrame;
 import de.yaams.maker.helper.gui.YHeader;
+import de.yaams.maker.programm.YaFrame;
 
 /**
  * @author Praktikant
  * 
  */
-public class WizardFrame extends YFrame {
+public class WizardFrame extends JDialog {
 
 	private static final long serialVersionUID = 5851875404052666947L;
 	protected ArrayList<WizardBasePage> pages;
@@ -44,7 +45,7 @@ public class WizardFrame extends YFrame {
 	 * 
 	 */
 	public WizardFrame(ArrayList<WizardBasePage> pages, AE ae) {
-		super("");
+		super(YaFrame.get(), "");
 		this.pages = pages;
 		this.ae = ae;
 		actPage = 0;
@@ -55,7 +56,7 @@ public class WizardFrame extends YFrame {
 
 		pack();
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setVisible(true);
 	}
 

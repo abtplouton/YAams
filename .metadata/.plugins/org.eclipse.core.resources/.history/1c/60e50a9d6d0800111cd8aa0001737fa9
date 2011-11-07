@@ -1,0 +1,80 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.rightclick;
+
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.Arrays;
+
+import de.yaams.maker.helper.gui.YMessagesDialog;
+
+/**
+ * @author abby
+ * 
+ */
+public class ClipboardHelper {
+
+	/**
+	 * Create the clipboard
+	 * 
+	 * @param ymd
+	 */
+	public static void init(YMessagesDialog ymd) {
+
+	}
+
+	/**
+	 * Check if the clipboard contains this class
+	 * 
+	 * @param clas
+	 * @return
+	 */
+	public static boolean contains(Class clas) {
+		return false;
+	}
+
+	/**
+	 * Put this object in the clipboard
+	 * 
+	 * @param clas
+	 * @return
+	 */
+	public static void set(Object o) {
+		Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+		Transferable transferData = systemClipboard.getContents(null);
+
+		DataFlavor dataFlavor[] = transferData.getTransferDataFlavors();
+
+		Object content;
+		try {
+			content = transferData.getTransferData(dataFlavor[1]);
+			System.out.println(content);
+			System.out.println(dataFlavor.length);
+			System.out.println(Arrays.toString(dataFlavor));
+		} catch (UnsupportedFlavorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Get the object from the clipboard
+	 * 
+	 * @param clas
+	 * @return
+	 */
+	public static Object get() {
+		return false;
+
+	}
+}

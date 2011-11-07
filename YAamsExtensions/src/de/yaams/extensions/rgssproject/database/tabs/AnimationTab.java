@@ -57,8 +57,8 @@ public class AnimationTab extends GTab {
 				"@animation_hue"));
 
 		// build panel
-		form.addHeader("animation", new FormHeader(I18N.t("Animationsoptionen"), "animation").setSorting(1).setColumn(4));
-		form.addElement("animation.timing", new FormAnimationTimingList(getProject(), act.getInstanceVariable("@timing")));
+		form.addHeader("animation", new FormHeader(I18N.t("Animationsoptionen"), "animation").setSorting(1).setColumn(2));
+		form.addElement("animation.timing", new FormAnimationTimingList(getProject(), act.getInstanceVariable("@timings")));
 
 		// build panel
 		form.addHeader("unsupported", new FormHeader(I18N.t("Nicht unterstützt"), "error").setColumn(4).setCollapsed(true));

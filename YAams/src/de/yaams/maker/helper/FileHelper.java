@@ -44,9 +44,11 @@ import org.apache.log4j.Level;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 
+import de.yaams.maker.helper.gui.YDialog;
 import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YMessagesDialog;
 import de.yaams.maker.helper.gui.YProgressWindowRepeat;
+import de.yaams.maker.programm.YAamsCore;
 
 /**
  * @author Administrator
@@ -533,19 +535,24 @@ public class FileHelper {
 	 * Create the folder, if possible
 	 * 
 	 * @param path
+	 * @returm true, folder exist or was created successful
 	 */
-	public static void mkdirs(final File f) {
+	public static boolean mkdirs(final File f) {
 		try {
 			// exist?
-			if (!f.isDirectory() || !f.canRead()) {
+			if (f.isDirectory() && f.canRead()) {
+				return true;
+			} else {
 				// can create folder?
 				if (!f.mkdirs()) {
 					// not possible
-					throw new IllegalArgumentException("File.mkdirs");
+					throw new IllegalArgumentException("Cant create folders " + f);
 				}
+				return true;
 			}
 		} catch (final Throwable t) {
 			YEx.warn("Can not create folders " + f, t);
+			return false;
 		}
 	}
 
@@ -659,9 +666,11 @@ public class FileHelper {
 				// load xml
 				o = new XStream().fromXML(erg.toString());
 			} catch (ConversionException c) {
+				YDialog.ok(I18N.t("Datei {0} ist korrupt.", name.getName()), I18N.t(
+						"{0} kann nicht geladen werden.<br> {1} arbeitet mit einer leeren Datei weiter.", name.getAbsolutePath(),
+						YAamsCore.TITLE), "warn_folder");
 				// wrong format
 				Log.ger.info("Can not load xml " + name);
-				Log.ger.info("Wrong format", c);
 			} catch (final Throwable t) {
 				YEx.warn("Can not load xml file from " + name, t);
 
@@ -720,52 +729,54 @@ public class FileHelper {
 	 * Helpermethod to check if the dir, or the parent dir exist and read &
 	 * writeable
 	 * 
+	 * @param path
 	 * @param errors
-	 * @param dir
+	 * @param isDir
+	 * @param checkWrite
 	 * 
 	 * @return true = all fine, false otherwise
 	 */
-	public static boolean checkPath(File path, YMessagesDialog errors, boolean dir, boolean checkWrite) {
+	public static boolean checkPath(File path, YMessagesDialog errors, boolean isDir, boolean checkWrite) {
 		boolean allOK = true;
 
 		// create folder
-		if (dir && !path.canRead() && !path.mkdirs()) {
+		if (isDir && !path.canRead() && !path.mkdirs()) {
 			errors.add(I18N.t("Kann Ordner {0} nicht erstellen.", path), Level.ERROR_INT);
 			allOK = false;
 		}
 
 		// create parent
-		if (!dir && !path.getParentFile().canRead() && !path.getParentFile().mkdirs()) {
+		if (!isDir && !path.getParentFile().canRead() && !path.getParentFile().mkdirs()) {
 			errors.add(I18N.t("Kann Ordner {0} für Datei {1} nicht erstellen.", path.getParentFile(), path.getName()), Level.WARN_INT);
 			allOK = false;
 		}
 
 		// readable?
-		if (dir && !path.isDirectory()) {
+		if (isDir && !path.isDirectory()) {
 			errors.add(I18N.t("Pfad {0} ist kein Ordner.", path), Level.INFO_INT);
 			allOK = false;
 		}
 
 		// readable?
-		if (dir && !path.canRead()) {
+		if (isDir && !path.canRead()) {
 			errors.add(I18N.t("Kann nicht vom Ordner {0} lesen.", path), Level.WARN_INT);
 			allOK = false;
 		}
 
 		// readable?
-		if (!dir && !path.getParentFile().canRead()) {
+		if (!isDir && !path.getParentFile().canRead()) {
 			errors.add(I18N.t("Kann nicht Datei {1} aus {0} lesen.", path.getName(), path.getParentFile()), Level.WARN_INT);
 			allOK = false;
 		}
 
 		// writeable?
-		if (checkWrite && dir && !path.canWrite()) {
+		if (checkWrite && isDir && !path.canWrite()) {
 			errors.add(I18N.t("Kann nicht in Ordner {0} schreiben.", path), Level.WARN_INT);
 			allOK = false;
 		}
 
 		// exist?
-		if (!dir && !checkWrite && (!path.exists() || !path.canRead())) {
+		if (!isDir && !checkWrite && (!path.exists() || !path.canRead())) {
 			errors.add(I18N.t("Datei {0} existiert nicht.", path), Level.WARN_INT);
 			allOK = false;
 		}
@@ -783,7 +794,7 @@ public class FileHelper {
 		// }
 
 		// check space
-		if (dir && path.getFreeSpace() <= 1024 * 1024 * 50) {
+		if (isDir && path.getFreeSpace() <= 1024 * 1024 * 50) {
 			errors.add(
 					I18N.t("Auf {0} sind nur noch {1} Speicherplatz verfügbar.", path, humanReadableByteCount(path.getFreeSpace(), false)),
 					Level.INFO_INT);
@@ -791,7 +802,7 @@ public class FileHelper {
 		}
 
 		// check space
-		if (!dir && path.getParentFile().getFreeSpace() <= 1024 * 1024 * 50) {
+		if (!isDir && path.getParentFile().getFreeSpace() <= 1024 * 1024 * 50) {
 			errors.add(
 					I18N.t("Auf {0} sind nur noch {1} Speicherplatz für {2} verfügbar.", path.getParentFile(),
 							humanReadableByteCount(path.getParentFile().getFreeSpace(), false), path.getName()), Level.INFO_INT);

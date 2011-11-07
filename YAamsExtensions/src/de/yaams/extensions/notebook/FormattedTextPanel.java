@@ -72,7 +72,7 @@ import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YFactory;
 import de.yaams.maker.helper.gui.YToolBar;
-import de.yaams.maker.helper.gui.rightclick.YRightClickMenu;
+import de.yaams.maker.helper.gui.rightclick.YRightClickMenuText;
 
 public class FormattedTextPanel extends JPanel {
 
@@ -125,7 +125,7 @@ public class FormattedTextPanel extends JPanel {
 		// initDocument();
 		textPane.setCaretPosition(0);
 
-		YRightClickMenu.installRightClickMenu(textPane);
+		YRightClickMenuText.install(textPane);
 
 		// Start watching for undoable edits and caret changes.
 		doc.addUndoableEditListener(new MyUndoableEditListener());

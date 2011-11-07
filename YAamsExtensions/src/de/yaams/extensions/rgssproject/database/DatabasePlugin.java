@@ -51,7 +51,7 @@ public class DatabasePlugin {
 				// add rb?
 				if (!p.getCache().containsKey("database.rgss")) {
 					// and addon
-					if (RGSSProjectHelper.getRGSSVersion(p) == 1) {
+					if (RGSSProjectHelper.is(p, true, false)) {
 						RGSSProjectHelper.getInterpreter(p).interpretInternFile(getClass(), "color.rb");
 						RGSSProjectHelper.getInterpreter(p).interpretInternFile(getClass(), "tone.rb");
 					}

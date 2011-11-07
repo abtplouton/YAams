@@ -1,0 +1,229 @@
+///**
+// * 
+// */
+//package de.yaams.maker.programm.plugins.core;
+//
+//import java.io.File;
+//import java.io.FileFilter;
+//import java.io.IOException;
+//import java.lang.reflect.Method;
+//import java.net.URL;
+//import java.net.URLClassLoader;
+//import java.security.AccessController;
+//import java.security.PrivilegedAction;
+//import java.util.ArrayList;
+//import java.util.Arrays;
+//
+//import de.yaams.maker.helper.FileHelper;
+//import de.yaams.maker.helper.I18N;
+//import de.yaams.maker.helper.Log;
+//import de.yaams.maker.helper.gui.YDialog;
+//import de.yaams.maker.helper.gui.YEx;
+//import de.yaams.maker.helper.gui.YMessagesDialog;
+//import de.yaams.maker.helper.gui.icons.IconCache;
+//import de.yaams.maker.programm.plugins.newcore.PluginLoader;
+//
+///**
+// * @author abt
+// * 
+// */
+//public class PluginFolder {
+//
+//	// protected ArrayList<File> infoFiles;
+//
+//	protected String folderName;
+//	protected File folder;
+//
+//	// Parameters
+//	@SuppressWarnings("rawtypes")
+//	private static final Class[] parameters = new Class[] { URL.class };
+//
+//	/**
+//	 * Create a new PluginFolder2
+//	 */
+//	protected PluginFolder() {
+//	}
+//
+//	/**
+//	 * Create a new PluginFolder2
+//	 */
+//	public PluginFolder(final File folder, final String name) {
+//		this.folder = folder;
+//		folderName = name;
+//		// infoFiles = new ArrayList<File>();
+//
+//		// don't exist?
+//		if (!folder.exists()) {
+//			FileHelper.mkdirs(folder);
+//		}
+//
+//	}
+//
+//	/**
+//	 * Helpermethod
+//	 * 
+//	 * @param base
+//	 */
+//	protected void addSearchFolder(File base) {
+//		// add it
+//		addFolder(base);
+//
+//		// search für jars inside and it itf
+//		for (File f : Arrays.asList(base.listFiles(new FileFilter() {
+//
+//			@Override
+//			public boolean accept(File f) {
+//				return f.getName().endsWith(".jar") || f.isDirectory();
+//			}
+//		}))) {
+//			// add it
+//			if (f.isDirectory()) {
+//				addSearchFolder(f);
+//			} else {
+//				addFolder(f);
+//			}
+//		}
+//	}
+//
+//	/**
+//	 * Add a new yex?
+//	 * 
+//	 * @param path
+//	 */
+//	public void addNewYex(final File path) {
+//		try {
+//			String id = path.getName().substring(0, path.getName().length() - 4);
+//
+//			// is exist?
+//			if (PluginManager.isInstall(id)
+//					&& !new YMessagesDialog(I18N.t("Update Plugin {0}?", PluginManager.getInfo(id).getTitle()), "plugin.update")
+//							.setIcon(IconCache.get("plugin_opts")).add("", 0).showQuestion()) {
+//				return;
+//			}
+//
+//			// copy archiv
+//			FileHelper.copy(path, new File(folder, path.getName()));
+//
+//			// show message
+//		} catch (final Throwable t) {
+//			YEx.info("Can not add Plugin " + path, t);
+//		}
+//	}
+//
+//	/**
+//	 * Add a new yex?
+//	 * 
+//	 * @param path
+//	 */
+//	protected void extractYex(final File path, YMessagesDialog md) {
+//		try {
+//			// get id
+//			String id = path.getName().substring(0, path.getName().length() - 4);
+//
+//			// create folder
+//			FileHelper.mkdirs(new File(folder, id));
+//
+//			// extract file
+//			FileHelper.extractArchive(path, new File(folder, id));
+//
+//			// delete archiv
+//			FileHelper.deleteFile(path);
+//
+//			// show message
+//			// md.add(I18N.t("Entpacken vom Plugin {0} war erfolgreich.", id),
+//			// Level.INFO_INT);
+//			Log.ger.info("Extract " + path);
+//			// mess.add(I18N.t("Extract {0} successful.", id));
+//		} catch (final Throwable t) {
+//			YEx.warn("Can not add Plugin " + path, t);
+//		}
+//	}
+//
+//	/**
+//	 * Add the .jar folder to the class loader
+//	 * 
+//	 * @param u
+//	 * @throws IOException
+//	 */
+//	@SuppressWarnings({ "rawtypes", "unchecked" })
+//	protected void addFolder(final File p) {
+//		Log.ger.info("Add to search path: " + p);
+//		try {
+//			final URL u = p.toURI().toURL();
+//
+//			final URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+//			final URL urls[] = sysLoader.getURLs();
+//			for (URL url : urls) {
+//				if (url.toString().equalsIgnoreCase(u.toString())) {
+//					return;
+//				}
+//			}
+//			final Class sysclass = URLClassLoader.class;
+//			try {
+//				final Method method = sysclass.getDeclaredMethod("addURL", parameters);
+//				AccessController.doPrivileged(new PrivilegedAction<Object>() {
+//					@Override
+//					public Object run() {
+//						method.setAccessible(true);
+//						return "";
+//					}
+//				});
+//
+//				method.invoke(sysLoader, new Object[] { u });
+//			} catch (final Throwable t) {
+//				throw new IOException("Error, could not add URL to system classloader", t);
+//			}
+//		} catch (final Throwable t) {
+//			YEx.info("Can not add " + p + " to plugin search path", t);
+//		}
+//	}
+//
+//	/**
+//	 * Get All PluginFils
+//	 * 
+//	 * @return
+//	 */
+//	public ArrayList<String> getPluginIDs(YMessagesDialog md) {
+//
+//		ArrayList<String> ids = new ArrayList<String>();
+//
+//		// build list
+//		for (File f : folder.listFiles(new FileFilter() {
+//
+//			@Override
+//			public boolean accept(File f) {
+//				return f.isDirectory() && new File(f, f.getName() + ".ini").exists() || f.getName().endsWith(".yex");
+//			}
+//		})) {
+//			// add it
+//			ids.add(f.getName().contains(".") ? f.getName().substring(0, f.getName().indexOf(".")) : f.getName());
+//		}
+//
+//		return ids;
+//	}
+//
+//	/**
+//	 * Uninstall a plugin
+//	 * 
+//	 * @param id
+//	 */
+//	public boolean uninstall(String id) {
+//		PluginInfo i = PluginLoader.get(id);
+//
+//		// ask user
+//		if (!YDialog.delete(i.getTitle(), i.getIcon())) {
+//			return false;
+//		}
+//
+//		// uninstall it
+//		FileHelper.deleteTree(new File(folder, id));
+//		return true;
+//	}
+//
+//	/**
+//	 * @return the folder
+//	 */
+//	public File getFolder() {
+//		return folder;
+//	}
+//}

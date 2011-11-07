@@ -11,7 +11,7 @@ import com.jidesoft.swing.AutoResizingTextArea;
 
 import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.gui.YFactory;
-import de.yaams.maker.helper.gui.rightclick.YRightClickMenu;
+import de.yaams.maker.helper.gui.rightclick.YRightClickMenuText;
 
 /**
  * @author Nebli
@@ -31,7 +31,7 @@ public class FormTextArea extends FormSaveElement {
 		area = new AutoResizingTextArea(2, 20);
 		area.setText(text);
 
-		YRightClickMenu.installRightClickMenu(area);
+		YRightClickMenuText.install(area);
 		element = area;
 	}
 

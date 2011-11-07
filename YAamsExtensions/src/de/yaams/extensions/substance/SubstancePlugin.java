@@ -7,11 +7,8 @@ import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Priority;
 import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.skin.AutumnSkin;
 import org.pushingpixels.substance.api.skin.BusinessBlackSteelSkin;
@@ -41,6 +38,7 @@ import org.pushingpixels.substance.api.skin.TwilightSkin;
 
 import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.Setting;
+import de.yaams.maker.helper.SystemHelper;
 import de.yaams.maker.helper.extensions.ExtentionManagement;
 import de.yaams.maker.helper.extensions.IExtension;
 import de.yaams.maker.helper.gui.YEx;
@@ -55,7 +53,7 @@ import de.yaams.maker.helper.gui.form.core.FormHeader;
 import de.yaams.maker.helper.gui.icons.IconCache;
 import de.yaams.maker.programm.YAamsCore;
 import de.yaams.maker.programm.YaFrame;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 
 /**
  * @author Nebli
@@ -99,7 +97,7 @@ public class SubstancePlugin extends BasePlugin {
 	public void start() {
 
 		// add plugin
-		IconCache.addPNG("substance", SubstancePlugin.class);
+		IconCache.addPNG(SubstancePlugin.class, "substance");
 
 		// set look and feel
 		final String skin = Setting.get("substance", "0");
@@ -125,7 +123,7 @@ public class SubstancePlugin extends BasePlugin {
 				FormBuilder f = (FormBuilder) objects.get("form");
 
 				// add it
-				f.addHeader("substance", new FormHeader(I18N.t("Look and Feel"), "substance"));
+				f.addHeader("substance", new FormHeader(I18N.t("Look and Feel"), "substance").setColumn(4));
 
 				FormComboBox c = YSettingHelper.combo(null, I18N.t("Look"), "substance", "0", className, classTitle);
 
@@ -155,6 +153,11 @@ public class SubstancePlugin extends BasePlugin {
 										YAamsCore.save();
 									}
 								}));
+
+				String[] eles = new String[] { "default", "CamelThrownTrees", "CreteSenesi", "Gargoyle" };
+
+				f.addElement("substance.startlogo",
+						YSettingHelper.combo(null, I18N.t("Startlogo"), "substance.startlogo", eles[0], eles, eles));
 			}
 		});
 
@@ -178,24 +181,14 @@ public class SubstancePlugin extends BasePlugin {
 			// set look and feel
 			if (skin != null && !skin.equals("0")) {
 				SubstanceLookAndFeel.setSkin(skin);
-			} else {
-				// check java bug
-				if (SystemUtils.IS_OS_WINDOWS && SystemUtils.JAVA_VERSION_INT >= 1623) {
-					YMessagesDialog ymd = new YMessagesDialog(I18N.t("Darstellungsprobleme möglich"), "substance.windows.j23bug");
-					ymd.add(I18N.t("Durch einen Bug in der installierten Javaversion {0} kann es zu Problemen "
-							+ "mit dem gewählten Skin kommen. Wirklich zu diesem Skin wechseln?", SystemUtils.JAVA_VERSION),
-							Priority.INFO_INT);
-					ymd.setIcon(IconCache.get("error_substance"));
-					if (!ymd.showQuestion()) {
-						return;
-					}
-				}
-
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				SwingUtilities.updateComponentTreeUI(YaFrame.get());
+				// load it
 				YMessagesDialog ymd = new YMessagesDialog(I18N.t("Kann Systemicons nicht laden."), "substance.systemicons");
 				IconCache.loadSystmIcons(ymd);
 				ymd.showOk();
+			} else {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				// SwingUtilities.updateComponentTreeUI(YaFrame.get());
+				SystemHelper.restart();
 			}
 		} catch (final Throwable t) {
 			YEx.error("Can not set skin " + skin, t);

@@ -8,6 +8,7 @@ import org.jruby.RubyObject;
 import org.jruby.runtime.builtin.IRubyObject;
 
 import de.yaams.extensions.jruby.RubyHelper;
+import de.yaams.extensions.rgssproject.database.JavaTable;
 import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.gui.form.FormCheckbox;
 import de.yaams.maker.helper.gui.form.FormComboBox;
@@ -86,6 +87,32 @@ public class RubyForm {
 	 * 
 	 * @param name
 	 * @param i
+	 * @return
+	 */
+	public static FormCheckbox getBooleanFlag(final String name, final RubyObject holder, final int index, final int flag) {
+		final JavaTable table = new JavaTable(holder);
+
+		return (FormCheckbox) new FormCheckbox(name, (table.get(index, 0, 0) & flag) == flag)
+				.addChangeListener(new FormElementChangeListener() {
+
+					@Override
+					public void stateChanged(FormElement form) {
+						if (Boolean.parseBoolean(form.getContentAsString())) {
+							table.set(index, 0, 0, table.get(index, 0, 0) | flag);
+						} else {
+							table.set(index, 0, 0, table.get(index, 0, 0));
+						}
+
+					}
+				});
+	}
+
+	/**
+	 * Add a boolean
+	 * 
+	 * @param name
+	 * @param holder
+	 * @param index
 	 * @return
 	 */
 	public static FormCheckbox getBoolean(final String name, final Object holder, final Object index) {

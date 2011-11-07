@@ -51,7 +51,8 @@ public class ExportActionList extends YBasisListElementArrayList {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {}
+	public void add() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -59,7 +60,8 @@ public class ExportActionList extends YBasisListElementArrayList {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/**
 	 * Edit the object, add the name value

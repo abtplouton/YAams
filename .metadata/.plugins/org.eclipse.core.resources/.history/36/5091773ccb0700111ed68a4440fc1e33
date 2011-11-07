@@ -1,0 +1,31 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.form;
+
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+
+/**
+ * @author abby
+ *
+ */
+public class FormSwing extends FormElement {
+
+	/**
+	 * @param title
+	 */
+	public FormSwing(String title, JComponent comp) {
+		super(title);
+		element = comp;
+	}
+
+	/* (non-Javadoc)
+	 * @see de.yaams.maker.helper.gui.form.FormElement#getContentAsString()
+	 */
+	@Override
+	public String getContentAsString() {
+		return element.toString();
+	}
+
+}

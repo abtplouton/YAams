@@ -59,7 +59,7 @@ public class ScriptTab extends ProjectSplitTab {
 	 */
 	@Override
 	protected void add() {
-		list.add(new ScriptAction("Script", "", "0"));
+		list.addExtern(new ScriptAction("Script", "", "0"));
 	}
 
 	/**
@@ -76,8 +76,8 @@ public class ScriptTab extends ProjectSplitTab {
 
 		// convert code
 		final ArrayList<BasisListElement> ary = new ArrayList<BasisListElement>();
-		for (int i = 0, l = script.length; i < l; i++) {
-			ary.add((BasisListElement) script[i]);
+		for (Object element : script) {
+			ary.add((BasisListElement) element);
 		}
 
 		return ary;

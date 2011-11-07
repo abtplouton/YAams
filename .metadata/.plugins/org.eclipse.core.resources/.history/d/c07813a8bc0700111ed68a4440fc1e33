@@ -1,0 +1,98 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.awt.GridLayout;
+import java.util.LinkedList;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.form.FormButton;
+import de.yaams.maker.helper.gui.form.FormCheckbox;
+import de.yaams.maker.helper.gui.form.FormElement;
+import de.yaams.maker.helper.gui.form.FormElementChangeListener;
+import de.yaams.maker.helper.gui.form.FormInfo;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+
+/**
+ * @author abby
+ * 
+ */
+public class PluginPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4570354101992039447L;
+
+	protected LinkedList<String> actives;
+
+	/**
+	 * @param arg0
+	 */
+	public PluginPanel() {
+		super(new GridLayout(1, 1));
+
+	}
+
+	/**
+	 * Reload the tab content
+	 */
+	protected void reload() {
+		// build form
+		FormBuilder f = new FormBuilder("plugins.details");
+
+		// has plugins?
+		if (PluginLoader.getPlugins().size() == 0) {
+			f.addElement("basic.error", new FormInfo("", I18N.t("Kein Plugin gefunden. Wählen Online prüfen aus, um die Liste "
+					+ "zu aktualisieren, oder füge manuell Plugins hinzu.")).setIcon("plugin_error", 32));
+		}
+
+		// run over all
+		for (final String id : PluginLoader.getPlugins().keySet()) {
+			// was added before?
+			if (!f.existElement("basic." + id + "_box")) {
+				// return;
+			}
+
+			final PluginInfo i = PluginLoader.getPlugins().get(id);
+
+			f.addElement("basic." + id + "_box", new FormCheckbox(i.getTitle(), false).addChangeListener(new FormElementChangeListener() {
+
+				@Override
+				public void stateChanged(FormElement form) {
+					JCheckBox c = (JCheckBox) form.getElement();
+					// add or remove it?
+					if (c.isSelected()) {
+						actives.add(id);
+					} else {
+						actives.remove(id);
+					}
+
+				}
+			}));
+			f.addElement("basic." + id + "_detail", new FormInfo("", i.getUpdateMessage()));// .setIcon(i.getIcon(),
+																							// 32));
+			f.addElement("basic." + id + "_moreinfo", new FormButton(I18N.t("Details"), null, new AE() {
+
+				@Override
+				public void run() {
+					YDialog.showForm(i.getTitle(), i.getImg(), i.getMoreInfo());
+
+				}
+			}));
+		}
+
+		// add it
+		removeAll();
+		add(f.getPanel(true));
+		invalidate();
+		revalidate();
+	}
+
+}

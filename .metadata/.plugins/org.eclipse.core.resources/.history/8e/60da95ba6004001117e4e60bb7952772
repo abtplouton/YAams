@@ -1,0 +1,26 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database;
+
+import org.jruby.RubyObject;
+import org.jruby.runtime.builtin.IRubyObject;
+
+/**
+ * Wrapperclass for Ruby Table
+ * 
+ * @author abby
+ * 
+ */
+public class JavaTable {
+
+	protected RubyObject table;
+
+	/**
+	 * 
+	 */
+	public JavaTable(IRubyObject table) {
+		this.table = table;
+	}
+
+}

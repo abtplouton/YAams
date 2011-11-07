@@ -1,0 +1,19 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.rightclick;
+
+/**
+ * @author abby
+ *
+ */
+public class ClipboardHelper {
+
+	/**
+	 * 
+	 */
+	public ClipboardHelper() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

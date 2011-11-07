@@ -10,7 +10,7 @@ import de.yaams.maker.helper.extensions.ExtentionManagement;
 import de.yaams.maker.helper.extensions.IExtension;
 import de.yaams.maker.helper.gui.YMessagesDialog;
 import de.yaams.maker.helper.gui.icons.IconCache;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 import de.yaams.maker.programm.project.Project;
 
 /**
@@ -28,7 +28,7 @@ public class NotebookPlugin extends BasePlugin {
 	 */
 	@Override
 	public boolean useable(YMessagesDialog md) {
-		return isVersionInstall(null, 0.005, 0.006, md);
+		return isVersionInstall(null, 0.6, 0.7, md);
 	}
 
 	/*

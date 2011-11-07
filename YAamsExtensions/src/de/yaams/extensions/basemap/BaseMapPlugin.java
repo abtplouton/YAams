@@ -22,7 +22,7 @@ import de.yaams.maker.helper.extensions.IExtension;
 import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YMessagesDialog;
 import de.yaams.maker.helper.gui.icons.IconCache;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 
 /**
  * @author Nebli

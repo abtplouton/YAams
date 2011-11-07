@@ -32,7 +32,7 @@ import de.yaams.maker.helper.gui.tabs.SplitActionListElement;
 import de.yaams.maker.helper.helpcenter.HelpCenterManagement;
 import de.yaams.maker.helper.wizard.WizardManagement;
 import de.yaams.maker.programm.YaFrame;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 import de.yaams.maker.programm.project.Project;
 import de.yaams.maker.programm.project.ProjectManagement;
 import de.yaams.maker.programm.tabs.OptionsTab;
@@ -46,7 +46,8 @@ public class RGSSProjectPlugin extends BasePlugin {
 	/**
 	 * 
 	 */
-	public RGSSProjectPlugin() {}
+	public RGSSProjectPlugin() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -178,7 +179,7 @@ public class RGSSProjectPlugin extends BasePlugin {
 	 */
 	@Override
 	public boolean useable(YMessagesDialog md) {
-		return isVersionInstall(null, 0.0053, 0.006, md) && isVersionInstall("jruby", 1.92, -1, md)
+		return isVersionInstall(null, 0.6, 0.7, md) && isVersionInstall("jruby", 1.92, -1, md)
 				&& isVersionInstall("basemap", 1.005, -1, md);
 	}
 

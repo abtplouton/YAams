@@ -58,7 +58,8 @@ public class FormGraphEle extends FormRessElement {
 	 */
 	public FormGraphEle(String title, Project project, String folder, final RubyString graph, Object hueHolder, Object hueID) {
 		super(title, project, folder, RubyHelper.toInt(graph.length()) == 0 ? null : RessRess
-				.getRessFile(project, folder, graph.toString()).getName(), FormRessElement.Typ.ONLYNAME);
+				.getRessFile(project, folder, graph.toString()) == null ? graph.toString() : RessRess.getRessFile(project, folder,
+				graph.toString()).getName(), FormRessElement.Typ.ONLYNAME);
 
 		this.graph = graph;
 		this.hueHolder = hueHolder;

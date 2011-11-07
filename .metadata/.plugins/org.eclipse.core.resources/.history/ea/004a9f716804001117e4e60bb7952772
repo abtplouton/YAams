@@ -1,0 +1,253 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database.form;
+
+import java.awt.GridLayout;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+
+import org.jruby.RubyArray;
+import org.jruby.RubyObject;
+import org.jruby.runtime.builtin.IRubyObject;
+
+import de.yaams.extensions.rgssproject.RGSSProjectHelper;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
+import de.yaams.extensions.rgssproject.database.SystemGObject;
+import de.yaams.extensions.rgssproject.map.form.FormSwitchVarSelector;
+import de.yaams.extensions.rgssproject.map.nevent.YEventCommandList;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.form.FormCheckbox;
+import de.yaams.maker.helper.gui.form.FormComboBox;
+import de.yaams.maker.helper.gui.form.FormElement;
+import de.yaams.maker.helper.gui.form.FormElementChangeListener;
+import de.yaams.maker.helper.gui.form.FormEmpty;
+import de.yaams.maker.helper.gui.form.FormHelper;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.gui.form.core.FormHeader;
+import de.yaams.maker.helper.helpcenter.HelpViewer;
+import de.yaams.maker.programm.project.Project;
+
+/**
+ * @author abt
+ * 
+ */
+public class EnemyActionPanel extends JPanel {
+
+	private static final long serialVersionUID = -7038427336325635360L;
+
+	protected ArrayList<SystemGObject> elements;
+	protected EnemyActionList list;
+	protected JPanel gContent;
+	protected RubyObject actions;
+	protected Project project;
+
+	/**
+	 * Create a new GTab
+	 * 
+	 * @param project
+	 */
+	public EnemyActionPanel(Project project, IRubyObject actions) {
+		super(new GridLayout(1, 1));
+		this.project = project;
+
+		RubyArray ra = (RubyArray) actions;
+
+		// convert code
+		elements = new ArrayList<SystemGObject>();
+		for (Object o : ra) {
+			elements.add(new SystemGObject((RubyObject) o));
+		}
+
+		// build gui
+		buildGui();
+	}
+
+	/**
+	 * Build the gui
+	 */
+	protected void buildGui() {
+		list = new EnemyActionList(this);
+		gContent = new JPanel(new GridLayout(1, 1));
+
+		add(YFactory.createHorizontPanel(list, gContent, "enemy.action"));
+
+		buildEmptyView();
+	}
+
+	/**
+	 * Remove all and show the help
+	 */
+	protected void buildEmptyView() {
+
+		// build panel
+		gContent.removeAll();
+
+		// add helpfile
+		gContent.add(new HelpViewer("enemy.action"));
+
+		// build it
+		gContent.invalidate();
+		gContent.revalidate();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getContent()
+	 */
+	public void buildInternContent(final int id) {
+
+		// if (id > 0) {
+		// build panel
+		gContent.removeAll();
+
+		// build it
+		FormBuilder form = new FormBuilder("enemy.action");
+		buildForm(form, id);
+
+		// add modi
+		form.addChangeListener(new FormElementChangeListener() {
+
+			@Override
+			public void stateChanged(FormElement form) {
+				// set modifizied
+				elements.get(id).setModified(true);
+
+			}
+		});
+
+		// build it
+		gContent.add(form.getPanel(true));
+		gContent.invalidate();
+		gContent.revalidate();
+		// } else {
+		// buildEmptyView();
+		// }
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getContent()
+	 */
+	public void buildForm(FormBuilder form, int id) {
+		// get page
+		RubyObject action = elements.get(id).getObject();
+
+		// build
+		FormComboBox f = RubyForm.getComboBoxNum(I18N.t("Typ"), new String[] { "0", "1" },  new String[] { "Basic", RGSS1Helper.getName(Type.SKILL) }, action, "@kind");
+		form.addElement("basic.kind", f.setSorting(-1));
+		form.addElement("basic.basic", FormHelper.setEnabeldWhenRightElementSelect(f,RubyForm.getComboBoxNum(I18N.t("Typ"), new String[] { "0", "1","2","3" },  new String[] { "Attack","Defend","Escape","Do nothing" }, action, "@basic"), "0"));
+		form.addElement("basic.skill", FormHelper.setEnabeldWhenRightElementSelect(f,
+new FormDBComboBox(RGSS1Helper.getName(Type.SKILL), project, Type.SKILL, action, "@skill_id", false), "1"));
+
+		form.addElement("basic.rating",
+				 RubyForm.getNumber(I18N.t("Wahrscheinlichkeit"), action, "@rating").setMinMax(0, 10, 1));
+		
+		form.addHeader("cond", new FormHeader(I18N.t("Bedingung"), "if").setCollapsed(true).setColumn(6));
+
+		
+		// add turn
+		form.addElement("cond.turn_turn_a",
+				 RubyForm.getNumber("Jede Runde:", action, "@condition_turn_a"));
+		form.addElement("cond.turn_turn_b",
+				 RubyForm.getNumber("+ X*", action, "@condition_turn_b"));
+
+
+
+		form.addElement("cond.condition_hp",
+				 RubyForm.getNumber(I18N.t("HP ist unter %"), action, "@condition_hp").setMinMax(0, 100, 1));
+
+		form.addElement("cond.condition_level",
+				 RubyForm.getNumber(I18N.t("Durchschnittliches Partylevel ist unter"), action, "@condition_level").setMinMax(0, 100, 1));
+
+		form.addElement("cond.condition_switch_id",new FormSwitchVarSelector(project, I18N.t("Switch is on"), action, "@condition_switch_id", Type.SWITCH));
+		
+
+
+
+		
+	}
+
+	/**
+	 * @return the elements
+	 */
+	public ArrayList<SystemGObject> getElements() {
+		return elements;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getIcon(java.lang.Object)
+	 */
+	public Object getIcon(final Integer o) {
+		return "enemy_edit";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#isModified(java.lang.Object
+	 * )
+	 */
+	public boolean isModified(final Integer o) {
+		return elements.get(o).isModified();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getText(java.lang.Object )
+	 */
+	public Object getText(final Integer value) {
+		return I18N.t("{0}.Seite", value + 1);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getDesc(java.lang.Object)
+	 */
+	public String getDesc(final Integer o) {
+		return null;
+	}
+
+	/**
+	 * Create a new object, for this type
+	 * 
+	 * @return
+	 */
+	public RubyObject createObject() {
+		return (RubyObject) RGSSProjectHelper.getInterpreter(project).runScriptlet("return RPG::Troop::Page.new");
+	}
+
+	/**
+	 * Delete the selected element
+	 * 
+	 * @param id
+	 */
+	public void delObject(int id) {
+
+		// last element?
+		if (elements.size() - 1 == id) {
+			// remove it
+			elements.remove(id);
+		} else {
+			// reset only element
+			elements.get(id).setObject(createObject());
+			elements.get(id).setModified(true);
+		}
+
+		// inform tab
+		buildEmptyView();
+	}
+}

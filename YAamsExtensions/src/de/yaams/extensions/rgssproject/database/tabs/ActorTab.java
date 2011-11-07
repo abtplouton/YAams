@@ -19,6 +19,7 @@ import de.yaams.extensions.rgssproject.database.form.FormGraphEle;
 import de.yaams.extensions.rgssproject.database.form.FormTable;
 import de.yaams.extensions.rgssproject.database.form.RubyForm;
 import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.form.FormInfo;
 import de.yaams.maker.helper.gui.form.core.FormBuilder;
 import de.yaams.maker.helper.gui.form.core.FormHeader;
 import de.yaams.maker.programm.project.Project;
@@ -82,18 +83,19 @@ public class ActorTab extends GTab {
 		form.addElement("item.armor4fix", RubyForm.getBoolean(I18N.t("Fix"), act, "@armor4_fix"));
 
 		// build parameters
-		form.addHeader("parameters", new FormHeader(I18N.t("Parameters"), "error").setColumn(12).setCollapsed(true));
+		form.addHeader("parameters", new FormHeader(I18N.t("Parameters"), "error").setColumn(14).setCollapsed(true).setSorting(2));
 		String hp = RGSS1Voc.hp(project), sp = RGSS1Voc.sp(project), str = RGSS1Voc.str(project), dex = RGSS1Voc.dex(project), agi = RGSS1Voc
 				.agi(project), inte = RGSS1Voc.inte(project);
 		IRubyObject table = act.getInstanceVariable("@parameters");
 
-		for (int i = 0; i <= 99; i++) {
-			form.addElement("parameters." + i + "hp", new FormTable(hp, table, 0, i));
-			form.addElement("parameters." + i + "sp", new FormTable(sp, table, 1, i));
-			form.addElement("parameters." + i + "str", new FormTable(str, table, 2, i));
-			form.addElement("parameters." + i + "dex", new FormTable(dex, table, 3, i));
-			form.addElement("parameters." + i + "agi", new FormTable(agi, table, 4, i));
-			form.addElement("parameters." + i + "inte", new FormTable(inte, table, 5, i));
+		for (int i = 1; i <= 99; i++) {
+			form.addElement("parameters." + i, new FormInfo("", I18N.t("Level {0}", i)).setSorting(i));
+			form.addElement("parameters." + i + "hp", new FormTable(hp, table, 0, i).setSorting(i));
+			form.addElement("parameters." + i + "sp", new FormTable(sp, table, 1, i).setSorting(i));
+			form.addElement("parameters." + i + "str", new FormTable(str, table, 2, i).setSorting(i));
+			form.addElement("parameters." + i + "dex", new FormTable(dex, table, 3, i).setSorting(i));
+			form.addElement("parameters." + i + "agi", new FormTable(agi, table, 4, i).setSorting(i));
+			form.addElement("parameters." + i + "inte", new FormTable(inte, table, 5, i).setSorting(i));
 		}
 
 	}

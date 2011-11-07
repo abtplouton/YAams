@@ -1,0 +1,130 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.HashMap;
+
+import org.apache.log4j.Level;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.Log;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.programm.YAamsCore;
+import de.yaams.maker.programm.plugins.newcore.PluginInfo.STAGE;
+
+/**
+ * @author abby
+ * 
+ */
+public class PluginLoader {
+
+	public static File folder;
+	protected static HashMap<String, PluginInfo> plugins;
+
+	/**
+	 * 
+	 */
+	public static void init(YMessagesDialog ymd) {
+		// has folder?
+		if (folder == null) {
+			folder = new File(YAamsCore.programPath, "Plugins");
+		}
+
+		// check folder
+		if (!FileHelper.checkPath(folder, ymd, true, true)) {
+			return;
+		}
+
+		// load active settings
+		plugins = (HashMap<String, PluginInfo>) FileHelper.loadXML(new File(folder, "setting.xml"));
+		if (plugins == null) {
+			plugins = new HashMap<String, PluginInfo>();
+		}
+
+		// extract plugins?
+		for (File path : folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".yex");
+			}
+		})) {
+			try {
+				// get id
+				String id = path.getName().substring(0, path.getName().length() - 4).toLowerCase();
+
+				// create folder
+				FileHelper.mkdirs(new File(folder, id));
+
+				// extract file
+				FileHelper.extractArchive(path, new File(folder, id));
+
+				// delete archiv
+				FileHelper.deleteFile(path);
+
+				// show message
+				// md.add(I18N.t("Entpacken vom Plugin {0} war erfolgreich.",
+				// id),
+				// Level.INFO_INT);
+				Log.ger.info("Extract " + path);
+				// mess.add(I18N.t("Extract {0} successful.", id));
+			} catch (final Throwable t) {
+				ymd.add(YEx.toString("Can not add Plugin " + path, t, false), Level.WARN_INT);
+			}
+		}
+
+		HashMap<String, PluginInfo> order = new HashMap<String, PluginInfo>();
+
+		// load all plugins from the folder
+		for (File path : folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.isDirectory();
+			}
+		})) {
+			// exist?
+			if (!plugins.containsKey(path.getName())) {
+				plugins.put(path.getName(), new PluginInfo(path));
+			}
+		}
+
+		// add all existing plugins
+		for (String key : plugins.keySet()) {
+			order.put(key, plugins.get(key));
+		}
+
+		// start all plugins
+		// load plugins
+		while (true) {
+			boolean chance = false;
+			for (String id : order.keySet().toArray(new String[order.keySet().size()])) {
+				// can start?
+				STAGE erg = order.get(id).canUse(ymd, order.keySet().toArray(new String[order.keySet().size()]));
+
+				// add it?
+				if (erg == STAGE.USEABLE) {
+					order.remove(id);
+					chance = true;
+				} else if (erg == STAGE.NOTUSEABLE) {
+					order.remove(id);
+					chance = true;
+				}
+			}
+			if (chance == false) {
+				break;
+			}
+		}
+
+		// are modules missing?
+		for (String id : order.keySet()) {
+			ymd.add(I18N.t("Kann Plugin {0} nicht starten.", order.get(id).getTitle()), Level.INFO_INT);
+		}
+
+	}
+}

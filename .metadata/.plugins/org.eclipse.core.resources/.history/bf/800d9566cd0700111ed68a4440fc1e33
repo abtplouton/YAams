@@ -1,0 +1,278 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import org.apache.log4j.Level;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.Log;
+import de.yaams.maker.helper.extensions.ExtentionManagement;
+import de.yaams.maker.helper.extensions.IExtension;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.programm.YAamsCore;
+import de.yaams.maker.programm.plugins.newcore.PluginInfo2.STAGE;
+
+/**
+ * @author abby
+ * 
+ */
+public class PluginLoader {
+
+	public static File folder;
+	protected static HashMap<String, PluginInfo2> plugins;
+
+	// Parameters
+	@SuppressWarnings("rawtypes")
+	private static final Class[] parameters = new Class[] { URL.class };
+
+	/**
+	 * 
+	 */
+	public static void init(YMessagesDialog ymd) {
+		// save settings
+		ExtentionManagement.add(ExtentionManagement.SAVE, new IExtension() {
+
+			@Override
+			public void work(HashMap<String, Object> objects) {
+				FileHelper.saveXML(new File(folder, "setting.xml"), plugins);
+
+			}
+		});
+
+		// has folder?
+		if (folder == null) {
+			folder = new File(YAamsCore.programPath, "Plugins");
+		}
+
+		// check folder
+		if (!FileHelper.checkPath(folder, ymd, true, true)) {
+			return;
+		}
+
+		// load active settings
+		plugins = (HashMap<String, PluginInfo2>) FileHelper.loadXML(new File(folder, "setting.xml"));
+		if (plugins == null) {
+			plugins = new HashMap<String, PluginInfo2>();
+		}
+
+		// extract plugins?
+		for (File path : folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.getName().toLowerCase().endsWith(".yex");
+			}
+		})) {
+			try {
+				// get id
+				String id = path.getName().substring(0, path.getName().length() - 4).toLowerCase();
+
+				// create folder
+				FileHelper.mkdirs(new File(folder, id));
+
+				// extract file
+				FileHelper.extractArchive(path, new File(folder, id));
+
+				// delete archiv
+				FileHelper.deleteFile(path);
+
+				// show message
+				// md.add(I18N.t("Entpacken vom Plugin {0} war erfolgreich.",
+				// id),
+				// Level.INFO_INT);
+				Log.ger.info("Extract " + path);
+				// mess.add(I18N.t("Extract {0} successful.", id));
+			} catch (final Throwable t) {
+				ymd.add(YEx.toString("Can not add Plugin " + path, t, false), Level.WARN_INT);
+			}
+		}
+
+		HashMap<String, PluginInfo2> order = new HashMap<String, PluginInfo2>();
+
+		// load all plugins from the folder
+		for (File path : folder.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.isDirectory();
+			}
+		})) {
+			// exist?
+			if (!plugins.containsKey(path.getName())) {
+				plugins.put(path.getName(), new PluginInfo2(path));
+			}
+		}
+
+		// add all existing plugins
+		for (String key : plugins.keySet()) {
+			order.put(key, plugins.get(key));
+		}
+
+		// start all plugins
+		// load plugins
+		while (true) {
+			boolean chance = false;
+			for (String id : order.keySet().toArray(new String[order.keySet().size()])) {
+				// can start?
+				STAGE erg = order.get(id).canUse(ymd, order.keySet().toArray(new String[order.keySet().size()]));
+
+				// add it?
+				if (erg == STAGE.USEABLE || erg == STAGE.NOTUSEABLE) {
+					order.remove(id);
+					chance = true;
+				}
+			}
+			if (chance == false) {
+				break;
+			}
+		}
+
+		// are modules missing?
+		for (String id : order.keySet()) {
+			ymd.add(I18N.t("Kann Plugin {0} nicht starten.", order.get(id).getTitle()), Level.INFO_INT);
+		}
+
+	}
+
+	/**
+	 * Helpermethod
+	 * 
+	 * @param base
+	 */
+	public static void addSearchFolder(File base) {
+		// add it
+		addFolder(base);
+
+		// search für jars inside and it itf
+		for (File f : Arrays.asList(base.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+				return f.getName().endsWith(".jar") || f.isDirectory();
+			}
+		}))) {
+			// add it
+			if (f.isDirectory()) {
+				addSearchFolder(f);
+			} else {
+				addFolder(f);
+			}
+		}
+	}
+
+	/**
+	 * Add the .jar folder to the class loader
+	 * 
+	 * @param u
+	 * @throws IOException
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected static void addFolder(final File p) {
+		Log.ger.info("Add to search path: " + p);
+		try {
+			final URL u = p.toURI().toURL();
+
+			final URLClassLoader sysLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+			final URL urls[] = sysLoader.getURLs();
+			for (URL url : urls) {
+				if (url.toString().equalsIgnoreCase(u.toString())) {
+					return;
+				}
+			}
+			final Class sysclass = URLClassLoader.class;
+			try {
+				final Method method = sysclass.getDeclaredMethod("addURL", parameters);
+				AccessController.doPrivileged(new PrivilegedAction<Object>() {
+					@Override
+					public Object run() {
+						method.setAccessible(true);
+						return "";
+					}
+				});
+
+				method.invoke(sysLoader, new Object[] { u });
+			} catch (final Throwable t) {
+				throw new IOException("Error, could not add URL to system classloader", t);
+			}
+		} catch (final Throwable t) {
+			YEx.info("Can not add " + p + " to plugin search path", t);
+		}
+	}
+
+	/**
+	 * @return the plugins
+	 */
+	public static HashMap<String, PluginInfo2> getPlugins() {
+		return plugins;
+	}
+
+	/**
+	 * Is this plugin install?
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static boolean isInstall(String id) {
+		return plugins.containsKey(id);
+	}
+
+	/**
+	 * Get this plugin
+	 * 
+	 * @return
+	 */
+	public static PluginInfo2 get(String key) {
+		return plugins.get(key);
+	}
+
+	/**
+	 * Helpermethod to uninstall a plugin
+	 * 
+	 * @param key
+	 */
+	public static void uninstall(String key) {
+		// ask user
+		if (!YDialog.delete(get(key).getTitle(), "plugin")) {
+			return;
+		}
+
+		// uninstall it
+		FileHelper.deleteTree(new File(folder, key));
+		plugins.remove(plugins.get(key));
+
+	}
+
+	public static void installUpdate(String key) {
+
+	}
+
+	/**
+	 * Look online for the catalog and load it
+	 * 
+	 * @param background
+	 */
+	public static void installOnlineInfo(boolean checkAlways) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public static boolean installFromOnline(String id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+}

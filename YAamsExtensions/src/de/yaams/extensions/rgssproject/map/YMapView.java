@@ -343,7 +343,8 @@ public class YMapView extends JPanel {
 		}
 
 		@Override
-		protected void add() {}
+		public void add() {
+		}
 
 		@Override
 		public Object getIcon(SystemGObject o) {
@@ -356,7 +357,8 @@ public class YMapView extends JPanel {
 		}
 
 		@Override
-		protected void info() {}
+		protected void info() {
+		}
 
 		@Override
 		public String getDesc(SystemGObject o) {

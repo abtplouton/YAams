@@ -8,8 +8,7 @@ import java.net.URISyntaxException;
 
 import de.yaams.maker.Start;
 import de.yaams.maker.helper.gui.YEx;
-import de.yaams.maker.programm.plugins.core.PluginFolder;
-import de.yaams.maker.programm.plugins.core.PluginManager;
+import de.yaams.maker.programm.plugins.PluginLoader;
 
 /**
  * @author Nebli
@@ -24,7 +23,8 @@ public class StartEx {
 	public static void main(final String[] args) throws URISyntaxException {
 
 		try {
-			PluginManager.addFolder(new PluginFolder(new File(new File(new File(new File("src"), "de"), "yaams"), "extensions"), "Debug"));
+			PluginLoader.folder = new File(new File(new File(new File("src"), "de"), "yaams"), "extensions");
+			// PluginManager.addFolder(new PluginFolder(, "Debug"));
 
 			Start.main(args);
 		} catch (final Throwable t) {

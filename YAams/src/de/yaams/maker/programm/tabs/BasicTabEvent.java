@@ -45,14 +45,14 @@ public class BasicTabEvent extends TabEvent {
 	 * Open Plugins
 	 */
 	public static void openPlugin() {
-		YaFrame.open(TabEvent.buildParameter(HomeTab.OPTIONS, null, JavaHelper.createHashStringObj("select", "plugin")));
+		YaFrame.open(TabEvent.buildParameter(HomeTab.OPTIONS, null, JavaHelper.createHashString("select", "plugin")));
 	}
 
 	/**
 	 * Open Feedback
 	 */
 	public static void openFeedback() {
-		YaFrame.open(TabEvent.buildParameter(HomeTab.OPTIONS, null, JavaHelper.createHashStringObj("select", "mail_web")));
+		YaFrame.open(TabEvent.buildParameter(HomeTab.OPTIONS, null, JavaHelper.createHashString("select", "mail_web")));
 	}
 
 	/**

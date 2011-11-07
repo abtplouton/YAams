@@ -1,0 +1,301 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database.tabs;
+
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import org.jruby.RubyObject;
+
+import com.ezware.common.Strings;
+
+import de.yaams.extensions.rgssproject.database.GList;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
+import de.yaams.extensions.rgssproject.database.SystemGObject;
+import de.yaams.maker.helper.Setting;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.YScrollPane;
+import de.yaams.maker.helper.gui.bcb.BcbBuilder;
+import de.yaams.maker.helper.gui.form.FormElement;
+import de.yaams.maker.helper.gui.form.FormElementChangeListener;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.helpcenter.HelpViewer;
+import de.yaams.maker.programm.project.Project;
+import de.yaams.maker.programm.project.ProjectTabEvent;
+import de.yaams.maker.programm.project.tab.ProjectTab;
+import de.yaams.maker.programm.tabs.TabEvent;
+
+/**
+ * @author abt
+ * 
+ */
+public abstract class GTab extends ProjectTab {
+
+	private static final long serialVersionUID = -7038427336325635360L;
+
+	protected ArrayList<SystemGObject> elements;
+	protected GList list;
+	protected JPanel gContent;
+	protected Type type;
+
+	/**
+	 * Create a new GTab
+	 * 
+	 * @param project
+	 */
+	public GTab(final Project project) {
+		super(project);
+	}
+
+	/**
+	 * Load the file & array
+	 */
+	protected void loadFile(Type typ) {
+		type = typ;
+
+		// convert code
+		elements = RGSS1Helper.get(project, type);
+
+		// build gui
+		buildGui();
+
+		// save it
+		addSaveButton();
+	}
+
+	/**
+	 * Save chanced, overwrite it to implement it
+	 */
+	@Override
+	protected void saveIntern() {
+		RGSS1Helper.save(project, type);
+	}
+
+	/**
+	 * Build the gui
+	 */
+	@Override
+	protected void buildGui() {
+		list = new GList(this, getTitle(), getIcon());
+		gContent = new JPanel(new GridLayout(1, 1));
+		super.buildGui();
+
+		buildEmptyView();
+	}
+
+	/**
+	 * Remove all and show the help
+	 */
+	protected void buildEmptyView() {
+
+		// build panel
+		gContent.removeAll();
+
+		// add helpfile
+		gContent.add(new HelpViewer(RGSS1Helper.getFileName(type)));
+
+		// build it
+		gContent.invalidate();
+		gContent.revalidate();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getContent()
+	 */
+	@Override
+	public JComponent getContent() {
+		return YFactory.createHorizontPanel(list, gContent, "db." + getIcon());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getContent()
+	 */
+	public void buildInternContent(final int id) {
+
+		try {
+			if (id > 0) {
+				// build panel
+				gContent.removeAll();
+
+				// build it
+				FormBuilder form = new FormBuilder("db." + getIcon());
+				buildForm(form, id);
+
+				// add modi
+				form.addChangeListener(new FormElementChangeListener() {
+
+					@Override
+					public void stateChanged(FormElement form) {
+						// set modifizied
+						elements.get(id).setModified(true);
+						setModified(true);
+
+					}
+				});
+
+				// build it
+				gContent.add(form.getPanel(true));
+				gContent.invalidate();
+				gContent.revalidate();
+			} else {
+				buildEmptyView();
+			}
+			//save pos
+			Setting.set(getId()+".list.pos", id);
+			
+		} catch (Throwable t) {
+			YEx.warn("Can not create Tabcontent", t);
+			// build panel
+			gContent.removeAll();
+			gContent.add(new YScrollPane(new JTextArea(Strings.stackStraceAsString(t))));
+			gContent.invalidate();
+			gContent.revalidate();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getContent()
+	 */
+	public abstract void buildForm(FormBuilder form, int id);
+
+	/**
+	 * @return the elements
+	 */
+	public ArrayList<SystemGObject> getElements() {
+		return elements;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getIcon(java.lang.Object)
+	 */
+	public Object getIcon(final Integer o) {
+		return RGSS1Helper.getIcon(getProject(), type, o);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getIcon()
+	 */
+	@Override
+	public String getIcon() {
+		return RGSS1Helper.getIcon(type);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.programm.tabs.YaTab#getTitle()
+	 */
+	@Override
+	public String getTitle() {
+		return RGSS1Helper.getNames(type);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#isModified(java.lang.Object
+	 * )
+	 */
+	public boolean isModified(final Integer o) {
+		return elements.get(o).isModified();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getText(java.lang.Object )
+	 */
+	public Object getText(final Integer value) {
+		return elements.get(value).getName();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getDesc(java.lang.Object)
+	 */
+	public String getDesc(final Integer o) {
+		return null;
+	}
+
+	/**
+	 * Create a new object, for this type
+	 * 
+	 * @return
+	 */
+	public abstract RubyObject createObject();
+
+	/**
+	 * Delete the selected element
+	 * 
+	 * @param id
+	 */
+	public void delObject(int id) {
+
+		// last element?
+		if (elements.size() - 1 == id) {
+			// remove it
+			elements.remove(id);
+		} else {
+			// reset only element
+			elements.get(id).setObject(createObject());
+			elements.get(id).setModified(true);
+		}
+
+		// inform tab
+		setModified(true);
+		buildEmptyView();
+	}
+
+	@Override
+	protected void buildBcb(BcbBuilder bcb) {
+		ProjectTabEvent.buildBcb(bcb, project, RGSS1Helper.getTabID(type));
+
+	}
+
+	@Override
+	public String getId() {
+		return TabEvent.buildParameter(RGSS1Helper.getTabID(type), project, null);
+	}
+
+	/**
+	 * This method will called, if reopen the tab or open it, to parse the
+	 * arguments
+	 * 
+	 * @param id
+	 */
+	@Override
+	public void parseArguments(HashMap<String, String> arguments) {
+		// select?
+		if (arguments.containsKey("select")) {
+			list.getList().setSelectedIndex(Integer.valueOf(arguments.get("select")) - 1);
+			return;
+		}
+		
+		//select save?
+			list.getList().setSelectedIndex(Setting.get(getId()+".list.pos",0));
+
+	}
+}

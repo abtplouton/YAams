@@ -1,0 +1,185 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.map.nevent.command;
+
+import javax.swing.JButton;
+
+import de.yaams.extensions.jruby.RubyHelper;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper;
+import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
+import de.yaams.extensions.rgssproject.database.form.FormDBComboBox;
+import de.yaams.extensions.rgssproject.database.form.RubyForm;
+import de.yaams.extensions.rgssproject.map.YMapView;
+import de.yaams.extensions.rgssproject.map.form.FormSwitchVarSelector;
+import de.yaams.extensions.rgssproject.map.nevent.core.EventCode;
+import de.yaams.extensions.rgssproject.map.nevent.core.EventCommand;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.form.FormButton;
+import de.yaams.maker.helper.gui.form.FormComboBox;
+import de.yaams.maker.helper.gui.form.FormHelper;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.gui.form.core.FormHeader;
+
+/**
+ * @author abt
+ * 
+ */
+public class TeleportCommand extends EventCommand {
+
+	protected final String[] types = new String[] { "Teleport Player", "Teleport Event" };
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.map.nevent.core.EventCommand#getIcon()
+	 */
+	@Override
+	public String getIcon() {
+		return "map";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.extensions.map.nevent.core.EventCommand#getIcon(de.yaams.extensions
+	 * .map.nevent.core.EventCode)
+	 */
+	@Override
+	public Object getIcon(EventCode e) {
+		return "map";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.map.nevent.core.EventCommand#getStartParameter()
+	 */
+	@Override
+	public String getStartParameter() {
+		return "0,0,0,0,0";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.map.nevent.core.EventCommand#getName()
+	 */
+	@Override
+	public String getName() {
+		return I18N.t("Teleportiere den Spieler/Events");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.extensions.map.nevent.core.EventCommand#getGroup()
+	 */
+	@Override
+	public String getGroup() {
+		return I18N.t("Map");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.extensions.map.nevent.core.EventCommand#buildPanel(de.yaams.
+	 * core.helper.gui.form.core.FormBuilder,
+	 * de.yaams.extensions.map.nevent.core.EventCode)
+	 */
+	@Override
+	public void buildPanel(final FormBuilder f, final EventCode e) {
+		// build panel
+		f.getHeader("basic").setColumn(4);
+
+		FormComboBox c = CommandFormHelper.buildCodeIdChancer(e, I18N.t("Setze"), new String[] { "201", "202" }, types);
+
+		f.addElement("basic.type", c.setSorting(-1));
+
+		// which typ?
+		FormComboBox d = RubyForm.getComboBoxNum(I18N.t("Position"), new String[] { "0", "1" }, new String[] { "Spezifisch", "Variable" },
+				e.getParameters(), 0);
+
+		f.addElement("basic.kind", d);
+
+		// add map
+		f.addHeader("map", new FormHeader(I18N.t("Spezifisch"), "map"));
+		f.addElement("map.map", new FormButton("", "map", new AE() {
+
+			@Override
+			public void run() {
+
+				// load
+				YMapView map = new YMapView(e.getId() == 201 ? RubyHelper.toInt(e.getParameters(), 1) : 1, e.getYecl().getProject());
+				map.installClickSupport();
+
+				map.setSelectX(RubyHelper.toInt(e.getParameters(), 2));
+				map.setSelectY(RubyHelper.toInt(e.getParameters(), 3));
+				if (e.getId() == 201) {
+					map.installMapChance();
+				}
+
+				// show
+				if (YDialog.show(I18N.t("Neue Position"), "map", map, true)) {
+					//set it
+					RubyHelper.setNum(e.getParameters(), 2, map.getSelectX());
+					RubyHelper.setNum(e.getParameters(), 3, map.getSelectY());
+					if (e.getId() == 201) {
+						RubyHelper.setNum(e.getParameters(), 1, map.getMapID());
+					}
+				}
+				((JButton) f.getElement("map.map").getElement()).setText(I18N.t("Neue Position {2} - {0}/{1}",
+						 map.getSelectX(), map.getSelectY(),
+						 e.getId() == 201?map.getMapID():""));
+
+			}
+		}));
+
+		// add vars
+		f.addHeader("var", new FormHeader(I18N.t("Variable"), "var"));
+		f.addElement(
+				"var.x",
+				FormHelper.setEnabeldWhenRightElementSelect(d,
+						new FormSwitchVarSelector(e.getYecl().getProject(), I18N.t("X"), e.getParameters(), 2, Type.VARIABLE), "1"));
+		f.addElement(
+				"var.y",
+				FormHelper.setEnabeldWhenRightElementSelect(d,
+						new FormSwitchVarSelector(e.getYecl().getProject(), I18N.t("Y"), e.getParameters(), 3, Type.VARIABLE), "1"));
+		f.addElement(
+				"var.id",
+				FormHelper.setEnabeldWhenRightElementSelect(c,
+						new FormSwitchVarSelector(e.getYecl().getProject(), I18N.t("Map"), e.getParameters(), 1, Type.VARIABLE), "201"));
+
+		// add selector
+		f.addElement("basic.typeitem", FormHelper.setEnabeldWhenRightElementSelect(c, new FormDBComboBox(RGSS1Helper.getName(Type.ITEM), e
+				.getYecl().getProject(), Type.ITEM, e.getParameters(), 0, false), "126"));
+		f.addElement("basic.typearmor", FormHelper.setEnabeldWhenRightElementSelect(c, new FormDBComboBox(RGSS1Helper.getName(Type.ARMOR),
+				e.getYecl().getProject(), Type.ARMOR, e.getParameters(), 0, false), "128"));
+		f.addElement("basic.typeweapon", FormHelper.setEnabeldWhenRightElementSelect(c, new FormDBComboBox(
+				RGSS1Helper.getName(Type.WEAPON), e.getYecl().getProject(), Type.WEAPON, e.getParameters(), 0, false), "127"));
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.extensions.map.nevent.core.EventCommand#getTitle(de.yaams.extensions
+	 * .map.nevent.core.EventCode)
+	 */
+	@Override
+	protected String getInternTitle(EventCode e) {
+		if (e.getId() == 201) {
+			return I18N.t("{0} {1}", CommandFormHelper.getOperatorText(e, 0), types[e.getId() - 125]);
+		} else {
+			return I18N.t("{0} {1}", CommandFormHelper.getOperatorText(e, 1), getSelectedObject(e).getName());
+		}
+
+		// return I18N.t("{1}: {0}", CommandFormHelper.getOperatorText(e,
+		// e.getId() == 125 ? 0 : 1), types[e.getId() - 125]);
+	}
+}

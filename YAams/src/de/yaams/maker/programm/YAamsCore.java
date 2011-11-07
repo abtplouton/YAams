@@ -22,7 +22,7 @@ public class YAamsCore {
 	/**
 	 * Version from the yaams script
 	 */
-	public final static Double VERSION = 0.0053;
+	public final static Double VERSION = 0.6;
 
 	/**
 	 * Name of yaams
@@ -31,7 +31,7 @@ public class YAamsCore {
 	/**
 	 * Name + Version of yaams
 	 */
-	public final static String TITLE = "YAams 0.0053 (Qilin)";
+	public final static String TITLE = "YAams 0.6 (Gargoyle)";
 
 	/**
 	 * Where save the programm his options?

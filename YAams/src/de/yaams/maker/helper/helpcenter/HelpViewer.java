@@ -14,7 +14,7 @@ import com.ezware.common.Strings;
 
 import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YHeader;
-import de.yaams.maker.helper.gui.rightclick.YRightClickMenu;
+import de.yaams.maker.helper.gui.rightclick.YRightClickMenuText;
 
 /**
  * @author abt
@@ -57,7 +57,7 @@ public class HelpViewer extends JPanel {
 			
 			editor = new JXEditorPane(help.getUrl());
 			editor.setEditable(false);
-			YRightClickMenu.installRightClickMenu(editor);
+			YRightClickMenuText.install(editor);
 			
 			add(new JScrollPane(editor), BorderLayout.CENTER);
 		} catch (Throwable t) {

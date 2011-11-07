@@ -1,0 +1,19 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database;
+
+/**
+ * @author abby
+ *
+ */
+public class JavaTable {
+
+	/**
+	 * 
+	 */
+	public JavaTable() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

@@ -29,6 +29,7 @@ import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YFactory;
 import de.yaams.maker.helper.gui.YToolBar;
 import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.helper.gui.rightclick.YRightClickMenuList;
 
 /**
  * Helperclass to build checkbox lists
@@ -104,16 +105,20 @@ public abstract class YSimpleList<T> extends JPanel {
 		list.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseReleased(final MouseEvent e) {}
+			public void mouseReleased(final MouseEvent e) {
+			}
 
 			@Override
-			public void mousePressed(final MouseEvent e) {}
+			public void mousePressed(final MouseEvent e) {
+			}
 
 			@Override
-			public void mouseExited(final MouseEvent e) {}
+			public void mouseExited(final MouseEvent e) {
+			}
 
 			@Override
-			public void mouseEntered(final MouseEvent e) {}
+			public void mouseEntered(final MouseEvent e) {
+			}
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
@@ -143,6 +148,8 @@ public abstract class YSimpleList<T> extends JPanel {
 
 			}
 		});
+
+		YRightClickMenuList.install(this);
 
 		buildOverlayNotification();
 
@@ -239,7 +246,7 @@ public abstract class YSimpleList<T> extends JPanel {
 
 		if (add) {
 			// build toolbar
-			toolbar.add(YFactory.tb(I18N.t("Erstelle ein neues {0}", title), icon + "_add", new AE() {
+			toolbar.add(YFactory.tb(I18N.t("Erstelle ein neues {0}", title), icon == null ? "add" : icon + "_add", new AE() {
 
 				@Override
 				public void run() {
@@ -261,7 +268,7 @@ public abstract class YSimpleList<T> extends JPanel {
 
 		if (delete) {
 			// build toolbar
-			toolbar.add(YFactory.tb(I18N.t("Ausgewähltes Element löschen"), icon + "_del", new AE() {
+			toolbar.add(YFactory.tb(I18N.t("Ausgewähltes Element löschen"), icon == null ? "del" : icon + "_del", new AE() {
 
 				@Override
 				public void run() {
@@ -318,7 +325,8 @@ public abstract class YSimpleList<T> extends JPanel {
 	/**
 	 * If the user select one element
 	 */
-	protected void selected() {}
+	protected void selected() {
+	}
 
 	/**
 	 * Look if the user select something and return than true, or false and show
@@ -387,12 +395,22 @@ public abstract class YSimpleList<T> extends JPanel {
 	 * 
 	 * @return
 	 */
-	public void add(final T o) {
+	protected void add(final T o) {
 		if (getObjectSize() == 0) {
 			add(0, o);
 		} else {
 			add(getObjectSize() - 1, o);
 		}
+	}
+
+	/**
+	 * Add a new extern element
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public void addExtern(Object o) {
+		add((T) o);
 	}
 
 	/**
@@ -411,13 +429,14 @@ public abstract class YSimpleList<T> extends JPanel {
 	 * This method will call, if the user will add a new element, normally this
 	 * method call add(T) with the special element.
 	 */
-	protected abstract void add();
+	public abstract void add();
 
 	/**
 	 * This method will call, if the user will import a new element, normally
 	 * this method call add(T) with the special element.
 	 */
-	protected void open() {}
+	protected void open() {
+	}
 
 	/**
 	 * Edit the object, add the name value

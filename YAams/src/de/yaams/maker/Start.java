@@ -131,14 +131,16 @@ public class Start {
 		// basics
 		YMessagesDialog mess = new YMessagesDialog(I18N.t("Kann {0} nicht richtig laden", YAamsCore.TITLE), "yaams.start");
 		IconCache.init(mess);
+
+		// load
+		initSystem(mess);
+		YAamsCore.init(mess);
+
 		final YWindowStart y = new YWindowStart();
 
 		// add log
 		final AppenderSkeleton aps = addLog(y);
 
-		// load
-		initSystem(mess);
-		YAamsCore.init(mess);
 		I18N.init();
 		new BasicHelpAdder();
 		// java.security.Security.addProvider(new

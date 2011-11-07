@@ -10,7 +10,7 @@ import de.yaams.maker.helper.extensions.ExtentionManagement;
 import de.yaams.maker.helper.extensions.IExtension;
 import de.yaams.maker.helper.gui.YMessagesDialog;
 import de.yaams.maker.helper.gui.icons.IconCache;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 import de.yaams.maker.programm.project.Project;
 import de.yaams.maker.programm.project.ProjectManagement;
 

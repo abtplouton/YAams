@@ -14,22 +14,21 @@ public class Java2DKeyListener implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_F1) {
-			System.out.println("open config window");
 			new ConfigWindow();
 			return;
 		}
 
 		if (e.getKeyCode() == 113) {
 			JFrame j = ((Java2DWindow) Render.getWindow()).getWindow();
-			if (j.getTitle().contains(" - "))
+			if (j.getTitle().contains(" - ")) {
 				j.setTitle(Yrgss.game.getName());
-			else {
+			} else {
 				j.setTitle(Yrgss.game.getName() + " - " + Render.getWindow().getFPS() + " FPS");
 			}
 			return;
 		}
 
-		if ((e.getKeyCode() == 115) || ((e.isAltDown()) && (e.getKeyCode() == 10))) {
+		if (e.getKeyCode() == 115 || e.isAltDown() && e.getKeyCode() == 10) {
 			Render.getWindow().setFullscreen(!Render.getWindow().isFullscreen());
 			return;
 		}
@@ -48,15 +47,18 @@ public class Java2DKeyListener implements KeyListener {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {
+	}
 
 	protected void set(KeyEvent e, boolean type) {
 		int key = keyTranslate(e.getKeyCode());
-		if (key != -1)
-			if (type)
+		if (key != -1) {
+			if (type) {
 				YInput.setKeyDown(key);
-			else
+			} else {
 				YInput.setKeyUp(key);
+			}
+		}
 	}
 
 	protected int keyTranslate(int id) {

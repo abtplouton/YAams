@@ -42,7 +42,7 @@ public class GList extends YSimpleList<Integer> {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {
+	public void add() {
 		// ask the tab
 		RubyObject o = tab.createObject();
 
@@ -97,7 +97,8 @@ public class GList extends YSimpleList<Integer> {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -183,7 +184,8 @@ public class GList extends YSimpleList<Integer> {
 	 * )
 	 */
 	@Override
-	public void addObject(Integer object, int id) {}
+	public void addObject(Integer object, int id) {
+	}
 
 	/*
 	 * (non-Javadoc)

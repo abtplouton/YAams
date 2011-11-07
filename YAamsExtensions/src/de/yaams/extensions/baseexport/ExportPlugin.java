@@ -6,7 +6,7 @@ package de.yaams.extensions.baseexport;
 import de.yaams.maker.helper.gui.YMessagesDialog;
 import de.yaams.maker.helper.gui.icons.IconCache;
 import de.yaams.maker.programm.YaFrame;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 
 /**
  * @author Nebli

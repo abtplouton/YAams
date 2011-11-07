@@ -34,6 +34,20 @@ public class JavaHelper {
 		return o;
 	}
 
+	public static HashMap<String, String> createHashString(String... data) {
+		// check parameter
+		Validate.notNull(data);
+		Validate.isTrue(data.length % 2 == 0, "data isn't even", data);
+
+		// build
+		HashMap<String, String> o = new HashMap<String, String>();
+		// fill
+		for (int i = 0, l = data.length / 2; i < l; i++) {
+			o.put(data[i * 2], data[i * 2 + 1]);
+		}
+		return o;
+	}
+
 	/**
 	 * Create an Array of Numers in String form
 	 * 

@@ -35,8 +35,8 @@ public class YHeader extends JXHeader {
 	 * @param description
 	 * @param icon
 	 */
-	public YHeader(final String title, final String icon) {
-		super(title, "", IconCache.get(icon, IconCache.SIZE * 2));
+	public YHeader(final String title, final Object icon) {
+		super(title, "", icon == null ? null : IconCache.getS(icon, IconCache.SIZE * 2));
 
 		// some gui chance
 		setTitleFont(getTitleFont().deriveFont(22f));
@@ -46,16 +46,20 @@ public class YHeader extends JXHeader {
 		addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseReleased(final MouseEvent e) {}
+			public void mouseReleased(final MouseEvent e) {
+			}
 
 			@Override
-			public void mousePressed(final MouseEvent e) {}
+			public void mousePressed(final MouseEvent e) {
+			}
 
 			@Override
-			public void mouseExited(final MouseEvent e) {}
+			public void mouseExited(final MouseEvent e) {
+			}
 
 			@Override
-			public void mouseEntered(final MouseEvent e) {}
+			public void mouseEntered(final MouseEvent e) {
+			}
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {

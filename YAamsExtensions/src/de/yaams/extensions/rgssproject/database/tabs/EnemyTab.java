@@ -14,6 +14,7 @@ import de.yaams.extensions.rgssproject.RTP;
 import de.yaams.extensions.rgssproject.database.RGSS1Helper;
 import de.yaams.extensions.rgssproject.database.RGSS1Helper.Type;
 import de.yaams.extensions.rgssproject.database.RGSS1Voc;
+import de.yaams.extensions.rgssproject.database.form.EnemyActionPanel;
 import de.yaams.extensions.rgssproject.database.form.FormDBComboBox;
 import de.yaams.extensions.rgssproject.database.form.FormGraphEle;
 import de.yaams.extensions.rgssproject.database.form.FormTable;
@@ -106,6 +107,7 @@ public class EnemyTab extends GTab {
 		int e = RGSS1Helper.get(getProject(), Type.ELEMENT).size();
 		IRubyObject eTable = act.getInstanceVariable("@element_ranks");
 		int s = RGSS1Helper.get(getProject(), Type.STATUS).size();
+		IRubyObject sTable = act.getInstanceVariable("@state_ranks");
 		int l = e > s ? e : s;
 
 		// run over all
@@ -113,23 +115,22 @@ public class EnemyTab extends GTab {
 			// add elements
 			if (e > i) {
 				form.addElement("ele." + i + "ele", new FormTable(RGSS1Helper.get(getProject(), Type.ELEMENT).get(i).getName(), eTable, i,
-						0));
+						0).setMinMax(0, 6, 1));
 			} else {
 				form.addElement("ele." + i + "ele", new FormEmpty());
 			}
 
 			// add status
 			if (s > i) {
-				form.addElement("ele." + i + "stat", new FormTable(RGSS1Helper.get(getProject(), Type.STATUS).get(i).getName(), eTable, i,
-						0));
+				form.addElement("ele." + i + "stat", new FormTable(RGSS1Helper.get(getProject(), Type.STATUS).get(i).getName(), sTable, i,
+						0).setMinMax(0, 6, 1));
 			} else {
 				form.addElement("ele." + i + "stat", new FormEmpty());
 			}
 		}
 
 		// build panel
-		form.addHeader("zunsupported", new FormHeader(I18N.t("Nicht unterstützt"), "error").setColumn(6).setCollapsed(true));
-		form.addElement("zunsupported.action", RubyForm.getError("Actions", "@actions", act));
+		form.setCenter(new EnemyActionPanel(project, act.getInstanceVariable("@actions")));
 
 	}
 

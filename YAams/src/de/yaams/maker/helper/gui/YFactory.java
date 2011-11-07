@@ -147,7 +147,8 @@ public class YFactory {
 		c.addComponentListener(new ComponentListener() {
 
 			@Override
-			public void componentShown(ComponentEvent e) {}
+			public void componentShown(ComponentEvent e) {
+			}
 
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -156,10 +157,12 @@ public class YFactory {
 			}
 
 			@Override
-			public void componentMoved(ComponentEvent e) {}
+			public void componentMoved(ComponentEvent e) {
+			}
 
 			@Override
-			public void componentHidden(ComponentEvent e) {}
+			public void componentHidden(ComponentEvent e) {
+			}
 		});
 
 		return splitPane;
@@ -201,7 +204,8 @@ public class YFactory {
 		c.addComponentListener(new ComponentListener() {
 
 			@Override
-			public void componentShown(ComponentEvent e) {}
+			public void componentShown(ComponentEvent e) {
+			}
 
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -210,25 +214,15 @@ public class YFactory {
 			}
 
 			@Override
-			public void componentMoved(ComponentEvent e) {}
+			public void componentMoved(ComponentEvent e) {
+			}
 
 			@Override
-			public void componentHidden(ComponentEvent e) {}
+			public void componentHidden(ComponentEvent e) {
+			}
 		});
 
 		return splitPane;
-	}
-
-	/**
-	 * Create a Button
-	 * 
-	 * @param name
-	 * @param i
-	 * @param l
-	 * @return
-	 */
-	public static JButton b(final String text, final String i, final AE l) {
-		return b(text, i, l, 16);
 	}
 
 	/**
@@ -239,9 +233,21 @@ public class YFactory {
 	 * @param l
 	 * @return
 	 */
-	public static JButton b(final String text, final String icon, final AE l, final int size) {
+	public static JButton b(final String text, final Object icon, final AE l) {
+		return b(text, icon, l, IconCache.SIZE);
+	}
+
+	/**
+	 * Create a Button
+	 * 
+	 * @param name
+	 * @param icon
+	 * @param l
+	 * @return
+	 */
+	public static JButton b(final String text, final Object icon, final AE l, final int size) {
 		// load button
-		final JButton b = icon == null ? new JButton(text) : new JButton(text, IconCache.get(icon, size));
+		final JButton b = icon == null ? new JButton(text) : new JButton(text, IconCache.getS(icon, size));
 
 		// install tooltip
 		YFactory.installTooltip(b, text, icon);
@@ -274,7 +280,7 @@ public class YFactory {
 	 * @param icon
 	 * @param e
 	 */
-	public static JLabel tb(final String text, final String icon, final AE e) {
+	public static JLabel tb(final String text, final Object icon, final AE e) {
 		return tb(text, icon, e, 16);
 	}
 
@@ -286,7 +292,7 @@ public class YFactory {
 	 * @param icon
 	 * @param e
 	 */
-	public static JLabel tb(final String text, final String icon, final AE ae, final int size) {
+	public static JLabel tb(final String text, final Object icon, final AE ae, final int size) {
 		// create button
 		// JideButton b = new JideButton(IconCache.get(icon,size));
 		// b.addActionListener(ae);
@@ -295,7 +301,7 @@ public class YFactory {
 		// // install tooltip
 		// YFactory.installTooltip(b, text, icon);
 
-		final JLabel l = new JLabel(IconCache.get(icon, size));
+		final JLabel l = new JLabel(IconCache.getS(icon, size));
 
 		// install tooltip
 		YFactory.installTooltip(l, text, icon);
@@ -338,10 +344,10 @@ public class YFactory {
 	 * @param icon
 	 * @param e
 	 */
-	public static JButton tb(Action action, final String text, final String icon, final int size) {
+	public static JButton tb(Action action, final String text, final Object icon, final int size) {
 		JButton b = new JButton(action);
 		b.setText("");
-		b.setIcon(IconCache.get(icon, size));
+		b.setIcon(IconCache.getS(icon, size));
 		installTooltip(b, text, icon);
 
 		return b;
@@ -353,7 +359,7 @@ public class YFactory {
 	 * @param ele
 	 * @param tooltip
 	 */
-	public static JComponent installTooltip(JComponent ele, final String tooltip, final String icon) {
+	public static JComponent installTooltip(JComponent ele, final String tooltip, final Object icon) {
 		// install tooltip
 		ele.setToolTipText(tooltip);
 		ele.addMouseListener(new MouseAdapter() {
@@ -550,7 +556,8 @@ public class YFactory {
 			}
 
 			@Override
-			public void changedUpdate(DocumentEvent e) {}
+			public void changedUpdate(DocumentEvent e) {
+			}
 		});
 		area.addFocusListener(new FocusListener() {
 			@Override

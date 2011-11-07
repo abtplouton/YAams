@@ -1,0 +1,41 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database.form;
+
+import org.jruby.RubyObject;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.form.FormButton;
+import de.yaams.maker.helper.gui.form.FormElement;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+
+/**
+ * @author abby
+ * 
+ */
+public class FormTileset extends FormButton {
+
+	protected RubyObject 
+	
+	/**
+	 * @param title
+	 * @param icon
+	 * @param e
+	 */
+	public FormTileset(RubyObject tileset, int id, String title, String icon, AE e) {
+		super(I18N.t("{0}x{1}", id / 8 + 1, id % 8 + 1), null, new AE() {
+
+			@Override
+			public void run() {
+				FormBuilder form = new FormBuilder("rgssproject.edit.tileset");
+form.addElement("basic.terrain", new FormTable(I18N.t("Terrain"), table, x, y))
+				
+				
+			}
+		});
+		
+		//button.
+	}
+}

@@ -120,7 +120,8 @@ public class RessourceList extends YArrayList<RessInfoFile> {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {}
+	public void add() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -128,7 +129,8 @@ public class RessourceList extends YArrayList<RessInfoFile> {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/*
 	 * (non-Javadoc)

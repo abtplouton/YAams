@@ -39,7 +39,7 @@ public class TroopEventPageList extends YSimpleList<Integer> {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {
+	public void add() {
 		// ask the tab
 		RubyObject o = panel.createObject();
 
@@ -91,7 +91,8 @@ public class TroopEventPageList extends YSimpleList<Integer> {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -156,7 +157,8 @@ public class TroopEventPageList extends YSimpleList<Integer> {
 	 * )
 	 */
 	@Override
-	public void addObject(final Integer object, int id) {}
+	public void addObject(final Integer object, int id) {
+	}
 
 	/*
 	 * (non-Javadoc)

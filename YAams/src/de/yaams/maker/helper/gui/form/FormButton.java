@@ -14,28 +14,38 @@ import de.yaams.maker.helper.gui.icons.IconCache;
  * 
  */
 public class FormButton extends FormElement {
-	
+
 	protected JButton button;
-	
+
 	/**
 	 * @param title
 	 */
-	public FormButton(final String title, final String icon, final AE e) {
+	public FormButton(final String title, final Object icon, final AE e) {
 		super("");
-		
+
 		button = YFactory.b(title, icon, e);
 		element = button;
+
+		button.addActionListener(new AE() {
+
+			@Override
+			public void run() {
+				informListeners();
+
+			}
+		});
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see de.yaams.packandgo.helper.gui.form.FormElement#getContentAsString()
 	 */
-	@Override public String getContentAsString() {
+	@Override
+	public String getContentAsString() {
 		return button.getText();
 	}
-	
+
 	public void set(String title, String icon) {
 		button.setText(title);
 		button.setIcon(IconCache.get(icon));

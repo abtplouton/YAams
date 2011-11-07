@@ -143,7 +143,7 @@ public abstract class FormList<T> extends FormSaveElement {
 		}
 
 		@Override
-		protected void add() {
+		public void add() {
 			add(getNewElement());
 			configForm();
 			informListeners();
@@ -161,7 +161,8 @@ public abstract class FormList<T> extends FormSaveElement {
 		}
 
 		@Override
-		protected void info() {}
+		protected void info() {
+		}
 
 		@Override
 		public String getDesc(T o) {

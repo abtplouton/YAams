@@ -229,7 +229,7 @@ public class FavoritManagement {
 
 			@Override
 			public void run() {
-				YaFrame.open(TabEvent.buildParameter(HomeTab.OPTIONS, null, JavaHelper.createHashStringObj("select", "fav")));
+				YaFrame.open(TabEvent.buildParameter(HomeTab.OPTIONS, null, JavaHelper.createHashString("select", "fav")));
 
 			}
 		}));

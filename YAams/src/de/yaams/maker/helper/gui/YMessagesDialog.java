@@ -11,6 +11,7 @@ import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Level;
 
 import com.ezware.dialog.task.TaskDialog;
@@ -63,7 +64,21 @@ public class YMessagesDialog {
 	 * @param level
 	 */
 	public YMessagesDialog add(String message, int level) {
+		try {
+			// check it
+			Validate.notEmpty(message, "Message is empty");
+			Validate.isTrue(level == Level.INFO_INT || level == Level.WARN_INT || level == Level.ERROR_INT, "Level has wrong format ("
+					+ level + ")");
+		} catch (Exception e) {
+			YEx.info("Can not add message " + message, e);
+		}
+
 		messages.add(message);
+		// log dialog
+		if (messages.size() == 1) {
+			Log.ger.info("New Dialog: " + title);
+		}
+		Log.ger.info("- " + message);
 
 		// reset level?
 		if (level != 0 && level > this.level) {
@@ -92,27 +107,24 @@ public class YMessagesDialog {
 			// build string
 			final StringBuilder s = new StringBuilder("<html>");
 			s.append(header);
-			Log.ger.info("New Dialog: " + title);
 			if (messages.size() > 1) {
 				s.append("<ul>");
 				for (final String e : messages) {
 					s.append("<li>");
 					s.append(e);
 					s.append("</li>");
-					Log.ger.info("* " + e);
 				}
 				s.append("</ul>");
 			} else {
 				s.append(messages.get(0));
 				s.append("<br>");
-				Log.ger.info("* " + messages.get(0));
 			}
 
 			// build string
 			s.append("<br>");
 			s.append(footer);
 			s.append("</html>");
-			Log.ger.info(footer);
+			Log.ger.info("Show & Footer: " + footer);
 
 			return s.toString();
 		} else {

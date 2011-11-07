@@ -16,7 +16,9 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.JavaHelper;
+import de.yaams.maker.helper.Setting;
 import de.yaams.maker.helper.extensions.ExtentionManagement;
 import de.yaams.maker.helper.gui.YEx;
 import de.yaams.maker.helper.gui.YFrame;
@@ -46,15 +48,17 @@ public final class YWindowStart extends Dialog {
 		YFrame.setIcons(this);
 
 		// ask for image
-		URL url = this.getClass().getResource("CreteSenesi.jpg");
+		URL url = this.getClass().getResource(
+				(Setting.get("substance.startlogo", "default").equals("default") ? "Gargoyle" : Setting.get("substance.startlogo",
+						"default")) + ".jpg");
 		ExtentionManagement.work("startwindow", JavaHelper.createHashStringObj("url", url));
 
 		try {
 
 			// load img
-			this.icon = new IconPanel(ImageIO.read(url));
+			icon = new IconPanel(ImageIO.read(url));
 			setLayout(new BorderLayout());
-			add(this.icon, BorderLayout.WEST);
+			add(icon, BorderLayout.WEST);
 
 		} catch (Throwable t) {
 			YEx.info("Can not load Image " + url, t);
@@ -105,7 +109,7 @@ public final class YWindowStart extends Dialog {
 			g.setFont(getFont().deriveFont(18f));
 			g.drawString(note, 10, 498);
 			g.setFont(getFont().deriveFont(25f).deriveFont(Font.BOLD));
-			g.drawString(YAamsCore.TITLE + " loading...", 10, 472);
+			g.drawString(I18N.t("{0} wird gestartet...", YAamsCore.TITLE), 10, 472);
 		}
 	}
 }

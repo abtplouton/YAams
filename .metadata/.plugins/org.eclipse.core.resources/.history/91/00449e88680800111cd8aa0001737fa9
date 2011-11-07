@@ -1,0 +1,732 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.list;
+
+import java.awt.BorderLayout;
+import java.awt.SystemColor;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import com.jidesoft.swing.DefaultOverlayable;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.Log;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.YToolBar;
+import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.helper.gui.rightclick.YRightClickMenuList;
+
+/**
+ * Helperclass to build checkbox lists
+ * 
+ * @author abt
+ * 
+ */
+public abstract class YSimpleList<T> extends JPanel {
+	private static final long serialVersionUID = 93250661503857536L;
+
+	protected final YToolBar toolbar;
+	protected final JList list;
+	protected final DefaultListModel model;
+	protected String icon, id, title;
+	protected DefaultOverlayable overlay;
+	protected JLabel overlayLabel;
+
+	/**
+	 * Start to display with wich index? 0=all
+	 */
+	protected int offSet;
+
+	/**
+	 * Display how much items? -1=all
+	 */
+	protected int itemsPerSite;
+
+	/**
+	 * Helper tmp var to check for element chance
+	 */
+	protected int tmpSelectedIndex;
+
+	// actions
+	protected boolean add, delete, info, open, config;
+
+	/**
+	 * If true, the render will show the index of the element
+	 */
+	protected boolean showNumbers;
+
+	/**
+	 * Create a new YCheckBoxList
+	 * 
+	 * @param text
+	 * @param icon
+	 * @param showInfo
+	 * @param showConfig
+	 */
+	public YSimpleList() {
+		super(new BorderLayout());
+		toolbar = new YToolBar();
+		model = new DefaultListModel();
+		offSet = 0;
+		itemsPerSite = -1;
+		tmpSelectedIndex = -1;
+		list = new JList(model);
+		setBorder(BorderFactory.createEmptyBorder());
+	}
+
+	/**
+	 * Build Gui
+	 */
+	protected void buildGui() {
+
+		// add objects
+		for (int i = 0, l = getObjectSize(); i < l; i++) {
+			model.addElement(getObject(i));
+		}
+
+		// which are enabled?
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setCellRenderer(getListRenderer());
+		list.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseReleased(final MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(final MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(final MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(final MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				// double click?
+				if (e.getClickCount() == 2) {
+					doubleClick();
+				} else if (e.getClickCount() == 1) {
+					// check it
+					if (tmpSelectedIndex != list.getSelectedIndex()) {
+						selected();
+						tmpSelectedIndex = list.getSelectedIndex();
+					}
+				}
+			}
+		});
+		list.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(final ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					// check it
+					if (tmpSelectedIndex != list.getSelectedIndex()) {
+						selected();
+						tmpSelectedIndex = list.getSelectedIndex();
+					}
+				}
+
+			}
+		});
+
+		YRightClickMenuList.install(this);
+
+		buildOverlayNotification();
+
+	}
+
+	/**
+	 * Helpermethod to add the info
+	 */
+	protected void buildOverlayNotification() {
+		// build
+		overlayLabel = new JLabel(getOverlayLabelText());
+		overlayLabel.setForeground(SystemColor.textInactiveText);
+
+		// build overlayable
+		overlay = new DefaultOverlayable(new JScrollPane(list));
+		overlay.addOverlayComponent(overlayLabel);
+		checkOverlay();
+
+		// which can be selected?
+		add(BorderLayout.CENTER, overlay);
+	}
+
+	/**
+	 * Check if display the overlay text
+	 */
+	protected void checkOverlay() {
+		overlay.setOverlayVisible(getObjectSize() == 0);
+	}
+
+	/**
+	 * Get the infotext for add a label
+	 * 
+	 * @return
+	 */
+	protected String getOverlayLabelText() {
+		// add
+		if (add || open) {
+			return I18N.t("Füge zuerst {0} hinzu", title);
+		} else {
+			return I18N.t("Nichts vorhanden");
+		}
+	}
+
+	/**
+	 * @return the list renderer
+	 */
+	protected ListCellRenderer getListRenderer() {
+		return new SimpleListRenderer(this);
+	}
+
+	/**
+	 * Count the objects and return it
+	 * 
+	 * @return
+	 */
+	public abstract int getObjectSize();
+
+	/**
+	 * Get the special object
+	 * 
+	 * @return
+	 */
+	public abstract T getObject(int id);
+
+	/**
+	 * Delete the special object
+	 * 
+	 * @return
+	 */
+	public abstract void delObject(int id);
+
+	/**
+	 * add the special object at the position
+	 * 
+	 * @param object
+	 * @param id
+	 */
+	public abstract void addObject(T object, int id);
+
+	/**
+	 * Build toolbar
+	 */
+	public void buildToolbar(final String title, final String icon) {
+		buildToolbar(title, icon, 16);
+	}
+
+	/**
+	 * Build toolbar
+	 */
+	public void buildToolbar(final String title, final String icon, final int size) {
+		this.icon = icon;
+		this.title = title;
+		id = icon;
+
+		if (add) {
+			// build toolbar
+			toolbar.add(YFactory.tb(I18N.t("Erstelle ein neues {0}", title), icon == null ? "add" : icon + "_add", new AE() {
+
+				@Override
+				public void run() {
+					add();
+				}
+			}, size));
+		}
+
+		if (open) {
+			// build toolbar
+			toolbar.add(YFactory.tb(I18N.t("Öffne/Importiere {0}", title), size == 16 ? "folder" : icon + "_folder", new AE() {
+
+				@Override
+				public void run() {
+					open();
+				}
+			}, size));
+		}
+
+		if (delete) {
+			// build toolbar
+			toolbar.add(YFactory.tb(I18N.t("Ausgewähltes Element löschen"), icon == null ? "del" : icon + "_del", new AE() {
+
+				@Override
+				public void run() {
+					del();
+
+				}
+			}, size));
+		}
+
+		if ((add || open || delete) && (info || config)) {
+			toolbar.addSeparator();
+		}
+
+		if (info) {
+			// build toolbar
+			toolbar.add(YFactory.tb(I18N.t("Zeigt weitere Infos über {0} an.", title), "info", new AE() {
+
+				@Override
+				public void run() {
+					info();
+
+				}
+			}, size));
+		}
+
+		if (config) {
+			// build toolbar
+			toolbar.add(YFactory.tb(I18N.t("Konfigurie {0}", title), "opts", new AE() {
+
+				@Override
+				public void run() {
+					config();
+
+				}
+			}, size));
+		}
+
+		add(BorderLayout.NORTH, toolbar);
+
+		buildOverlayNotification();
+	}
+
+	/**
+	 * If the user click double, the options window will apier.
+	 */
+	protected void doubleClick() {
+		if (config) {
+			config();
+		} else if (info) {
+			info();
+		}
+	}
+
+	/**
+	 * If the user select one element
+	 */
+	protected void selected() {
+	}
+
+	/**
+	 * Look if the user select something and return than true, or false and show
+	 * an message
+	 * 
+	 * @return
+	 */
+	public boolean canEdit() {
+		if (list.getSelectedIndex() == -1) {
+			// Sounds.buzzer();
+			YDialog.ok(
+					I18N.t("Kein Element makiert"),
+					I18N.t("<html>Um ein Element bearbeiten zu können, muss es zuerst makiert werden.<br>")
+							+ (add ? I18N.t("Um ein neues Element zu erstellen. Klicke oben links auf das Plus-Symbol.") : ""), icon
+							+ "_help");
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Can delete the element? return true for yes or false for no. With
+	 * notification message.
+	 * 
+	 * @return
+	 */
+	public boolean canDelete() {
+		if (!canEdit()) {
+			return false;
+		}
+
+		// delete it?
+		if (!YDialog.delete(getText(getSelectedObject()).toString(), icon)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Delete the selected element, overwrite it to implements your own methods
+	 * 
+	 * @return
+	 */
+	public void del() {
+		if (!canDelete()) {
+			return;
+		}
+
+		delete();
+	}
+
+	/**
+	 * Delete the selected element
+	 * 
+	 * @return
+	 */
+	public void delete() {
+		delObject(list.getSelectedIndex());
+		model.remove(list.getSelectedIndex());
+		checkOverlay();
+	}
+
+	/**
+	 * Add a new element
+	 * 
+	 * @return
+	 */
+	protected void add(final T o) {
+		if (getObjectSize() == 0) {
+			add(0, o);
+		} else {
+			add(getObjectSize() - 1, o);
+		}
+	}
+
+	/**
+	 * Add a new element
+	 * 
+	 * @return
+	 */
+	public void add(int id, T o) {
+		addObject(o, id);
+		model.add(id, o);
+		list.setSelectedIndex(id);
+		checkOverlay();
+	}
+
+	/**
+	 * This method will call, if the user will add a new element, normally this
+	 * method call add(T) with the special element.
+	 */
+	public abstract void add();
+
+	/**
+	 * This method will call, if the user will import a new element, normally
+	 * this method call add(T) with the special element.
+	 */
+	protected void open() {
+	}
+
+	/**
+	 * Edit the object, add the name value
+	 */
+	protected void config() {
+		try {
+			if (!canEdit()) {
+				return;
+			}
+
+			configIntern();
+		} catch (final Throwable t) {
+			YEx.warn("Can not edit list", t);
+		}
+	}
+
+	/**
+	 * Helpermethod to get the right icon for the selected object
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public abstract Object getIcon(T o);
+
+	/**
+	 * Helpermethod to get the info, if this element be modified
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public abstract boolean isModified(T o);
+
+	/**
+	 * Look and review the results
+	 * 
+	 * @param d
+	 */
+	// protected abstract void editInterpret(final DialogHelper d);
+
+	/**
+	 * Show Info about the selected field
+	 */
+	protected abstract void info();
+
+	/**
+	 * @return the toolbar
+	 */
+	public YToolBar getToolbar() {
+		return toolbar;
+	}
+
+	/**
+	 * @return the list
+	 */
+	public JList getList() {
+		return list;
+	}
+
+	/**
+	 * @return the model
+	 */
+	public DefaultListModel getModel() {
+		return model;
+	}
+
+	/**
+	 * Add at the bottom a notification message
+	 * 
+	 * @param message
+	 */
+	// public void addMessage(final String message) {
+	// add(new InfoSetting(message).getPanel(), BorderLayout.SOUTH);
+	// }
+
+	/**
+	 * Check if two objects have the same signature, show an info message and
+	 * call edit again.
+	 */
+	// protected void doublecheck() {
+	// for (int i = 0, l = objs.size(); i < l; i++)
+	// for (int j = i; j > l; j++) {
+	// T obj = getObject(i);
+	// // found double?
+	// if (obj.toString().equals(obj.toString())) {
+	// YDialog.info(Messages.get("filter.double", obj
+	// .toString()));
+	//
+	// // edit again
+	// config();
+	// return;
+	// }}
+	// }
+
+	/**
+	 * Get the object
+	 * 
+	 * @return
+	 */
+	public T getSelectedObject() {
+		if (list.getSelectedIndex() == -1) {
+			return null;
+		}
+		return getObject(list.getSelectedIndex());
+	}
+
+	/**
+	 * Return, if exist the desc for this element
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public abstract String getDesc(T o);
+
+	/**
+	 * Edit the object
+	 */
+	protected abstract void configIntern();
+
+	/**
+	 * @return the add
+	 */
+	public boolean isAdd() {
+		return add;
+	}
+
+	/**
+	 * @param add
+	 *            the add to set
+	 */
+	public void setAdd(final boolean add) {
+		this.add = add;
+	}
+
+	/**
+	 * @return the delete
+	 */
+	public boolean isDelete() {
+		return delete;
+	}
+
+	/**
+	 * @param delete
+	 *            the delete to set
+	 */
+	public void setDelete(final boolean delete) {
+		this.delete = delete;
+	}
+
+	/**
+	 * @return the info
+	 */
+	public boolean isInfo() {
+		return info;
+	}
+
+	/**
+	 * @param info
+	 *            the info to set
+	 */
+	public void setInfo(final boolean info) {
+		this.info = info;
+	}
+
+	/**
+	 * @return the open
+	 */
+	public boolean isOpen() {
+		return open;
+	}
+
+	/**
+	 * @param open
+	 *            the open to set
+	 */
+	public void setOpen(final boolean open) {
+		this.open = open;
+	}
+
+	/**
+	 * @return the config
+	 */
+	public boolean isConfig() {
+		return config;
+	}
+
+	/**
+	 * @param config
+	 *            the config to set
+	 */
+	public void setConfig(final boolean config) {
+		this.config = config;
+	}
+
+	/**
+	 * Helpermethod to get the text for the list element/title, normally
+	 * toString.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public Object getText(final T value) {
+		return value.toString();
+	}
+
+	/**
+	 * @return the offSet
+	 */
+	public int getOffSet() {
+		return offSet;
+	}
+
+	/**
+	 * @param offSet
+	 *            the offSet to set
+	 */
+	public void setOffSet(int offSet) {
+		this.offSet = offSet;
+	}
+
+	/**
+	 * @return the itemsPerSite
+	 */
+	public int getItemsPerSite() {
+		return itemsPerSite;
+	}
+
+	/**
+	 * @param itemsPerSite
+	 *            the itemsPerSite to set
+	 */
+	public void setItemsPerSite(int itemsPerSite) {
+		this.itemsPerSite = itemsPerSite;
+	}
+
+	/**
+	 * @return the showNumbers
+	 */
+	public boolean isShowNumbers() {
+		return showNumbers;
+	}
+
+	/**
+	 * @param showNumbers
+	 *            the showNumbers to set
+	 */
+	public void setShowNumbers(boolean showNumbers) {
+		this.showNumbers = showNumbers;
+	}
+
+	/**
+	 * Format the output fpr the list renderer
+	 * 
+	 * @param label
+	 * @param list
+	 * @param value
+	 * @param index
+	 * @param isSelected
+	 * @param cellHasFocus
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public JLabel getListCellRendererComponent(JLabel label, final JList list, final Object value, final int index,
+			final boolean isSelected, final boolean cellHasFocus) {
+
+		try {
+			label.setText(getText((T) value).toString());
+		} catch (Exception e) {
+			label.setText(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+		// show numbers?
+		if (showNumbers) {
+			label.setText(index + ". " + label.getText());
+		}
+
+		// add modi?
+		if (isModified((T) value)) {
+			label.setText("*" + label.getText());
+		}
+
+		final String desc = getDesc((T) value);
+
+		// build hex color
+		String rgb = Integer.toHexString(SystemColor.textInactiveText.getRGB());
+
+		// exist?
+		if (desc != null) {
+			label.setText("<html>" + label.getText() + "<br><font color='#" + rgb.substring(2, rgb.length()) + "'>" + desc
+					+ "</font></html>");
+		}
+
+		// set icon?
+		try {
+			Object o = getIcon((T) value);
+			if (o != null) {
+				label.setIcon(IconCache.getS(o, desc == null ? 16 : 32));
+			}
+		} catch (Throwable t) {
+			Log.ger.info("Can not reader icon", t);
+			label.setIcon(IconCache.get("dummy_error"));
+		}
+		return label;
+	}
+}

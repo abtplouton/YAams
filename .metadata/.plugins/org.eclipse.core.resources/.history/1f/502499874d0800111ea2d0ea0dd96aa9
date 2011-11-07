@@ -1,0 +1,81 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.rightclick;
+
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.icons.IconCache;
+
+/**
+ * @author abt
+ * 
+ */
+public class YRightClickMenu {
+
+	/**
+	 * Create a new RightClickMenu
+	 */
+	public static void installRightClickMenuForText(final JTextComponent tc) {
+
+		tc.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent me) {
+				mousePressed(me);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent me) {
+				// right click?
+				if (me.isPopupTrigger()) {
+					// create popup menu and show
+					JPopupMenu menu = new JPopupMenu();
+					menu.add(new CutAction(tc));
+					menu.add(new CopyAction(tc));
+					menu.add(new PasteAction(tc));
+					menu.add(new DeleteAction(tc));
+					menu.addSeparator();
+					menu.add(new SelectAllAction(tc));
+
+					// show it
+					Point pt = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), tc);
+					menu.show(tc, pt.x, pt.y);
+
+				}
+
+			}
+		});
+
+	}
+
+	// @author Santhosh Kumar T - santhosh@in.fiorano.com
+	class DeleteAction extends AbstractAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+		protected JTextComponent comp;
+
+		public DeleteAction(JTextComponent comp) {
+			super(I18N.t("Delete"), IconCache.get("del"));
+			this.comp = comp;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			comp.replaceSelection(null);
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return comp.isEditable() && comp.isEnabled() && comp.getSelectedText() != null;
+		}
+	}
+}

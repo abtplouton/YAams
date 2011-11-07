@@ -29,7 +29,7 @@ public class RessRess {
 	 * @param folder
 	 * @param name
 	 * @param graphic
-	 * @return
+	 * @return file to the graphic or null
 	 */
 	public static File getRessFile(final Project project, final String folder, final String name) {
 		// in the cache?

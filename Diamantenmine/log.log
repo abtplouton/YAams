@@ -1,0 +1,14 @@
+20:48:09 INFO  [main] Logginglevel: INFO
+20:48:09 INFO  [main] Date: Sun Oct 30 20:48:09 CET 2011
+20:48:09 ERROR [main] Can not start game (FileNotFoundException: No readable path /Users/abby/Documents/diamant found.) 
+java.io.FileNotFoundException: No readable path /Users/abby/Documents/diamant found.
+	at de.yaams.extensions.diamant.RunDiamant.main(RunDiamant.java:49)
+20:48:09 INFO  [main] <html>Ein Modul hat ein sehr großes Problem und muss beendet werden. Die Stabilität von Diament kann nicht mehr gewährleistet werde.<br> Es kann weiter laufen muss es aber nicht. Der Fehler sollte auf jeden Fall eingeschickt werden.
+java.io.FileNotFoundException: No readable path /Users/abby/Documents/diamant found.
+	at de.yaams.extensions.diamant.RunDiamant.main(RunDiamant.java:49)
+20:48:11 INFO  [main] Close Programm
+java.lang.Throwable
+	at de.yaams.extensions.diamant.helper.SystemHelper.exit(SystemHelper.java:259)
+	at de.yaams.extensions.diamant.helper.YEx.mess(YEx.java:87)
+	at de.yaams.extensions.diamant.helper.YEx.error(YEx.java:130)
+	at de.yaams.extensions.diamant.RunDiamant.main(RunDiamant.java:68)

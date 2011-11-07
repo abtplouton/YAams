@@ -1,0 +1,480 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.project;
+
+import java.io.File;
+
+import javax.swing.JFileChooser;
+
+import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.Level;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.YDialog;
+import de.yaams.maker.helper.gui.YFactory;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.helper.gui.form.FormButton;
+import de.yaams.maker.helper.gui.form.FormCheckbox;
+import de.yaams.maker.helper.gui.form.FormComboBox;
+import de.yaams.maker.helper.gui.form.FormFileSelectField;
+import de.yaams.maker.helper.gui.form.FormHelper;
+import de.yaams.maker.helper.gui.form.FormInfo;
+import de.yaams.maker.helper.gui.form.FormTextField;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.gui.form.core.FormHeader;
+import de.yaams.maker.helper.gui.form.validator.ValidatorBase;
+import de.yaams.maker.helper.gui.form.validator.ValidatorUmlaut;
+import de.yaams.maker.helper.gui.icons.FormIcon;
+import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.helper.gui.list.BasisListElement;
+import de.yaams.maker.helper.gui.list.YBasisListElementArrayList;
+import de.yaams.maker.programm.YAamsCore;
+import de.yaams.maker.programm.YaFrame;
+import de.yaams.maker.programm.environment.YLevel;
+import de.yaams.maker.programm.project.tab.ProjectTab;
+import de.yaams.maker.programm.tabs.BasicTabEvent;
+import de.yaams.maker.programm.tabs.HomeTab;
+import de.yaams.maker.programm.tabs.TabEvent;
+import de.yaams.maker.programm.tabs.YaTab;
+
+/**
+ * @author Nebli
+ * 
+ */
+public class ProjectList extends YBasisListElementArrayList {
+	private static final long serialVersionUID = 2362479776677049608L;
+
+	protected ProjectPanel ppanel;
+
+	/**
+	 * @param ary
+	 */
+	public ProjectList(ProjectPanel panel) {
+		super(ProjectManagement.projects);
+		ppanel = panel;
+		add = true;
+		open = true;
+		delete = true;
+		config = true;
+		buildToolbar(I18N.t("Projekt"), "project", 32);
+
+		// add button
+		toolbar.add(YFactory.tb(I18N.t("Im Tab öffnen"), "tab_arrow", new AE() {
+
+			@Override
+			public void run() {
+				doubleClick();
+
+			}
+		}, 32));
+
+		updateLeftView();
+	}
+
+	/**
+	 * Get the infotext for add a label
+	 * 
+	 * @return
+	 */
+	@Override
+	protected String getOverlayLabelText() {
+		return I18N.t("<html>Kein Projekt gefunden<br>Erstelle oder importiere zuerst ein Projekt.", title);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getIcon(java.lang.Object)
+	 */
+	@Override
+	public String getIcon(final BasisListElement o) {
+		if (o instanceof Project) {
+			Project p = (Project) o;
+			return o.getIcon() + "_" + (p.isLock() ? p.isLockOpen() ? "unlock" : "lock" : ((Project) o).getType().getIcon());
+		} else {
+			return o.getIcon();
+		}
+	}
+
+	/**
+	 * Helpermethod
+	 * 
+	 * @param p
+	 * @return
+	 */
+	protected FormBuilder getMainForm(final Project p) {
+		// has types?
+		if (ProjectManagement.types.size() == 0) {
+			YDialog.ok(
+					I18N.t("Kein Projekttyp gefunden."),
+					I18N.t("{0} verwaltet die Projekte mit Projekttypen. Es ist aber leider noch keine installiert. Installiere einfach die passenden Plugins."),
+					"project_warn");
+			return null;
+		}
+
+		// create Form
+		final FormBuilder f = new FormBuilder("project");
+		f.addElement("basic.folder",
+				new FormFileSelectField(I18N.t("Ordner"), p == null ? null : p.getPath(), JFileChooser.OPEN_DIALOG, true, true))
+				.addValidator(new ValidatorUmlaut());
+		f.addElement("basic.name", new FormTextField(I18N.t("Name"), p == null ? "Project" : p.getTitle()));
+		f.addElement("basic.icon", new FormIcon(I18N.t("Icon"), p == null ? IconCache.games[0] : p.getIcon(), IconCache.games));
+
+		// build list for types
+		String[] key = ProjectManagement.types.keySet().toArray(new String[ProjectManagement.types.size()]);
+		String[] title = new String[key.length];
+		for (int i = 0, l = key.length; i < l; i++) {
+			title[i] = ProjectManagement.getType(key[i]).getTitle();
+		}
+
+		f.addElement("basic.type", new FormComboBox(I18N.t("Typ"), key, title).selectField(p == null ? null : p.getType().getType()));
+
+		// add crypto
+		if (YLevel.IS_ADVANCED) {
+			f.addHeader("sec", new FormHeader(I18N.t("Sicherheit"), "lock").setCollapsed(true));
+
+			// load infos
+			final boolean cryp = p != null && p.getCache() != null && p.getCache().containsKey("projecttype");
+
+			// add info
+			if (p == null) {
+				f.addElement("sec.info",
+						new FormInfo("", I18N.t("Das Projekt kann erst verschlüsselt werden, wenn es erstellt wurde.")).setIcon("warn", 16));
+			}
+
+			// set it
+			f.addElement(
+					"sec.sec",
+					new FormCheckbox(I18N.t("Projekt verschlüsseln"), cryp)
+							.setInfoTxt(
+									"<html><strong>Vorgehen</strong><br>"
+											+ "Wenn die Verschlüssungsfunktion aktiviert wurde, muss im nächsten Dialog der Name und das Password gewählt werden.<br>"
+											+ "Wenn die Funktion deaktiviert wird, muss der Name und das Password eingegeben werden, wenn Sie noch nicht eingegeben wurden.<br>"
+											+ "<br><strong>Hinweise</strong<br>"
+											+ "Wenn das Projekt einmal entschlüsselt wurde, wird es erst wieder beim Beenden von YAams verschlüsselt. <br>"
+											+ "Solange sind die Daten für jeden frei einsehbar. Die Verschlüsselung ist nur so gut, wie das Password & der Nutername sind.",
+									"help").setEnabled(p != null).addValidator(new ValidatorBase() {
+
+								@Override
+								public void isValide(YMessagesDialog y) {
+									boolean ncryp = Boolean.valueOf(form.getContentAsString());
+
+									// difference?
+									if (!y.hasErrors() && ncryp != cryp) {
+										// crypto it
+										if (ncryp) {
+
+											// ask for data
+											FormBuilder formb = new FormBuilder("project.sec");
+											formb.addElement("basic.name", new FormTextField(I18N.t("Name"), SystemUtils.USER_NAME));
+											formb.addElement("basic.pw", new FormTextField(I18N.t("Password"), p.getTitle()));
+
+											YDialog.showForm(I18N.t("Name & Password"), p.getIcon() + "_lock", formb);
+
+											// setit
+											p.getCache().put("projecttype", f.getElement("sec.typ").getContentAsString());
+											p.getCache().put(
+													"projectpw",
+													formb.getElement("basic.name").getContentAsString() + " - "
+															+ formb.getElement("basic.pw").getContentAsString());
+										} else {
+
+											// decrypt it
+											p.load();
+											p.getCache().remove("projecttype");
+											p.getCache().remove("projectpw");
+										}
+									}
+
+								}
+							}));
+			f.addElement("sec.typ", FormHelper.setEnabeldWhenRightElementSelect(f.getElement("sec.sec"), new FormComboBox(I18N.t("Typ"),
+					new String[] { "Blowfish", "DES", "RC2", "RC4", "RC5" }).selectField((String) (cryp ? p.getCache().get("projecttype")
+					: "Blowfish")), "true"));
+			f.getElement("sec.sec").informListeners();
+
+		}
+
+		return f;
+	}
+
+	/**
+	 * Open it
+	 */
+	@Override
+	public void doubleClick() {
+		// check
+		if (!canEdit()) {
+			return;
+		}
+
+		// get it
+		final Project p = (Project) getSelectedObject();
+		p.load();
+		YaFrame.open(TabEvent.buildParameter(ProjectTabEvent.HOME, p, null));
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#open()
+	 */
+	@Override
+	protected void open() {
+		// get form
+		final FormBuilder f = getMainForm(null);
+
+		// has it?
+		if (f == null) {
+			return;
+		}
+
+		// show
+		if (YDialog.showForm(I18N.t("Projekt importieren"), "project_open", f) == false) {
+			return;
+		}
+
+		// basics
+		String type = f.getElement("basic.type").getContentAsString();
+		File path = new File(f.getElement("basic.folder").getContentAsString());
+
+		// add project
+		add(new Project(path, f.getElement("basic.name").getContentAsString(), f.getElement("basic.icon").getContentAsString(), type));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
+	 */
+	@Override
+	public void add() {
+
+		// get form
+		final FormBuilder f = getMainForm(null);
+
+		// has it?
+		if (f == null) {
+			return;
+		}
+
+		f.getElement("basic.folder").addValidator(new ValidatorBase() {
+
+			@Override
+			public void isValide(YMessagesDialog y) {
+				// folder exist and contains files?
+				File[] file = new File(f.getElement("basic.folder").getContentAsString()).listFiles();
+				if (file != null && file.length > 0) {
+					y.add(I18N.t("{0} enthält schon Dateien. Evtl. werden vorhandene überschrieben oder gelöscht.",
+							f.getElement("basic.folder").getContentAsString()), Level.WARN_INT);
+				}
+
+			}
+		});
+
+		// show
+		if (YDialog.showForm(I18N.t("Projekt hinzufügen"), "project_add", f) == false) {
+			return;
+		}
+
+		// basics
+		String type = f.getElement("basic.type").getContentAsString();
+		File path = new File(f.getElement("basic.folder").getContentAsString());
+
+		Project p = new Project(path, f.getElement("basic.name").getContentAsString(), f.getElement("basic.icon").getContentAsString(),
+				type);
+
+		// create base project
+		if (ProjectManagement.getType(type).createProject(p)) {
+			// add project
+			add(p);
+
+		} else {
+			YDialog.ok(I18N.t("Kann {0} nicht erstellen.", p.getTitle()), "", p.getIcon() + "_error");
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
+	 */
+	@Override
+	protected void configIntern() {
+		Project p = (Project) getSelectedObject();
+
+		// get form
+		FormBuilder f = getMainForm(p);
+		f.getElement("basic.type").setEnabled(false);
+
+		// show
+		if (YDialog.showForm(I18N.t("Projekt editieren"), "project_opts", f) == false) {
+			return;
+		}
+
+		// edit project
+		p.setPath(new File(f.getElement("basic.folder").getContentAsString()));
+		p.setTitle(f.getElement("basic.name").getContentAsString());
+		p.setIcon(f.getElement("basic.icon").getContentAsString());
+		p.updateDesc();
+	}
+
+	/**
+	 * Helpermethod to update the view
+	 */
+	protected void updateLeftView() {
+
+		// get it
+		final Project p = (Project) getSelectedObject();
+
+		// form
+		FormBuilder f = new FormBuilder("project.left");
+
+		// add basics
+		f.addHeader("main", new FormHeader(YAamsCore.NAME, "yaams").setSorting(-2));
+		f.addElement("main.opts", new FormButton(I18N.t("Options"), "opts", new AE() {
+
+			@Override
+			public void run() {
+				YaFrame.open(HomeTab.OPTIONS);
+
+			}
+		}));
+		f.addElement("main.plugins", new FormButton(I18N.t("Plugins"), "plugin", new AE() {
+
+			@Override
+			public void run() {
+				BasicTabEvent.openPlugin();
+
+			}
+		}).setSorting(1));
+		f.addElement("main.feedback", new FormButton(I18N.t("Feedback"), "mail_web", new AE() {
+
+			@Override
+			public void run() {
+				BasicTabEvent.openFeedback();
+
+			}
+		}).setSorting(2));
+
+		// has project?
+		if (p != null) {
+
+			// main elements
+			f.getHeader("basic").setTitle(p.getTitle()).setIcon(p.getIcon()).setCollapsed(true).setSorting(-1);
+			f.addElement("basic.type", new FormInfo(I18N.t("Typ"), p.getType().getTitle()));
+
+			// aktions
+			f.addHeader("action", new FormHeader(I18N.t("Aktionen"), "mouse"));
+			f.addElement("action.tab", new FormButton(I18N.t("Im Tab öffnen"), "tab_arrow", new AE() {
+
+				@Override
+				public void run() {
+					doubleClick();
+
+				}
+			}).setSorting(-2));
+			f.addElement("action.edit", new FormButton(I18N.t("Konfigurieren"), "opts", new AE() {
+
+				@Override
+				public void run() {
+					config();
+
+				}
+			}).setSorting(-1));
+			f.addElement("action.del", new FormButton(I18N.t("Löschen"), "trash", new AE() {
+
+				@Override
+				public void run() {
+					del();
+
+				}
+			}));
+
+			// add addons
+			p.getType().leftForm(f, p);
+
+			// show
+			ppanel.setLeft(f.getPanel(true));
+		} else {
+			f.getHeader("basic").setTitle("Erste Schritte").setIcon("help");
+			// aktions
+			f.addElement("basic.add", new FormButton(I18N.t("Erstellen"), "project_add", new AE() {
+
+				@Override
+				public void run() {
+					add();
+
+				}
+			}));
+			f.addElement("basic.open", new FormButton(I18N.t("Importieren"), "folder", new AE() {
+
+				@Override
+				public void run() {
+					open();
+
+				}
+			}));
+
+			// show
+			ppanel.setLeft(f.getPanel(true));
+		}
+
+	}
+
+	/**
+	 * Edit the object, add the name value
+	 */
+	@Override
+	protected void selected() {
+		updateLeftView();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#info()
+	 */
+	@Override
+	protected void info() {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#delObject(int)
+	 */
+	@Override
+	public void delObject(final int id) {
+
+		// close tabs
+		if (getSelectedObject() instanceof Project) {
+			for (YaTab tab : YaFrame.get().getAllOpenTabs()) {
+				if (tab instanceof ProjectTab) {
+					ProjectTab p = (ProjectTab) tab;
+					if (p.getProject().equals(getSelectedObject())) {
+						YaFrame.close(p.getId());
+					}
+				}
+			}
+
+			// remove cache
+			ProjectManagement.getProjects().remove(getSelectedObject());
+
+			//delete files?
+			if (YDialog.askUser(I18N.t("Dateien mitlöschen?"), "project.file.del", "trash_folder",
+					I18N.t("Sollen alle Dateien & Ordner in {0} mitgelöscht werden?", ((Project) getSelectedObject()).getPath()),
+					I18N.t("Dateien löschen"), I18N.t("Dateien behalten"), "trash", "folder_ok")) {
+				FileHelper.deleteTree(((Project) getSelectedObject()).getPath());
+			}
+		}
+		super.delObject(id);
+
+	}
+}

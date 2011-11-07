@@ -24,7 +24,6 @@ import de.yaams.maker.helper.gui.AE;
 import de.yaams.maker.helper.gui.YActionDialog;
 import de.yaams.maker.helper.gui.YDialog;
 import de.yaams.maker.helper.gui.YEx;
-import de.yaams.maker.helper.gui.YProgressWindowRepeat;
 import de.yaams.maker.helper.gui.form.FormButton;
 import de.yaams.maker.helper.gui.form.core.FormBuilder;
 import de.yaams.maker.helper.gui.form.core.FormHeader;
@@ -245,96 +244,93 @@ public class RTP {
 									I18N.t("RTP {0} enthält unzulässige Dateien", name),
 									"rtp.install.graphics",
 									"rtp",
-									I18N.t("Graphics.exe wird nicht unterstützt. Neuinstallation des RTPs wird empfohlen. Laden des Projektes trotzdem fortführen oder abbrechen?"),
-									I18N.t("{0} laden"), I18N.CANCEL, "disk", "cancel")) {
+									I18N.t("Graphics.exe wird nicht unterstützt. Neuinstallation des RTPs wird empfohlen. Laden des Projektes trotzdem fortführen?"),
+									I18N.t("Projekt öffnen"), I18N.t("RTP neu installieren"), "disk", "setup")) {
 						return f;
 					}
 
 				}
+			} else {
 				return f;
 			}
-		} else {
+		}
 
-			int erg = 0;
+		int erg = 0;
 
-			if (!first || YLevel.IS_ADVANCED) {
-				// ask for install
-				YActionDialog y = new YActionDialog("rtp.install", I18N.t("RTP {0} wurde nicht gefunden.", name));
-				y.addLink("setup_rtp", I18N.t("Installieren (empfohlen)"),
-						I18N.t("Überprüft online, ob die Version existiert und installiert Sie."));
-				y.addLink("folder_search", I18N.t("Ordner auswählen"), I18N.t("Ermöglicht selbst manuell den RTP Ordner auswählen"));
-				y.addLink("cancel", I18N.CANCEL,
-						I18N.t("Bindet kein RTP ein. Kann zu Nebeneffekten führen, wenn Ressourcen verwendet werden."));
+		if (!first || YLevel.IS_ADVANCED) {
+			// ask for install
+			YActionDialog y = new YActionDialog("rtp.install", I18N.t("RTP {0} wurde nicht gefunden.", name));
+			y.addLink("setup_rtp", I18N.t("Installieren (empfohlen)"),
+					I18N.t("Überprüft online, ob die Version existiert und installiert Sie."));
+			y.addLink("folder_search", I18N.t("Ordner auswählen"), I18N.t("Ermöglicht selbst manuell den RTP Ordner auswählen"));
+			y.addLink("cancel", I18N.CANCEL, I18N.t("Bindet kein RTP ein. Kann zu Nebeneffekten führen, wenn Ressourcen verwendet werden."));
 
-				erg = y.show();
-			}
+			erg = y.show();
+		}
 
-			// get it
-			if (erg == 0) {
+		// get it
+		if (erg == 0) {
 
-				// ask online
-				String url = NetHelper.getContentAsString("http://www.yaams.de/file/?typ=rtp&windows=" + SystemUtils.IS_OS_WINDOWS
-						+ "&name=" + name + "&rgss=" + rgssVersion);
+			YDialog.ok(
+					I18N.t("RTP {0} wird nun runtergeladen & installiert", name),
+					I18N.t("{0} prüft online, ob das RTP verfügbar ist. Danach wird es runtergeladen und installiert. Abhängig von der Internetgeschwindigkeit kann der Prozess einige Zeit in anspruch nehmen."),
+					"setup_wait");
 
-				// found?
-				if (url == null || url.length() == 0 || url.equals("null")) {
-					return isRTPinstalledGui(name, rgssVersion, false);
-				}
+			// ask online
+			String url = NetHelper.getContentAsString("http://www.yaams.de/file/?typ=rtp&windows=" + SystemUtils.IS_OS_WINDOWS + "&name="
+					+ name + "&rgss=" + rgssVersion);
 
-				// get file ending
-				String[] s = url.split("/");
-
-				// download
-				File ex = new File(YAamsCore.tmpFolder, s[s.length - 1]);
-				NetHelper.downloadFile(ex, url);
-
-				// extract or run?
-				if (url.endsWith(".zip")) {
-					// create folder
-					FileHelper.mkdirs(getRTPFilename(name, rgssVersion));
-					// extract
-					FileHelper.extractArchive(ex, getRTPFilename(name, rgssVersion));
-				} else {
-					final String rtpName = name;
-					// inform user
-					new SwingHelper(true) {
-
-						@Override
-						public void run() {
-							YDialog.ok(
-									I18N.t("RTP {0} wird nun installiert.", rtpName),
-									I18N.t("Die Installation wird nun gestartet. YAams wird auf die Fertigstellung warten und ist für diese Zeit nicht benutzbar."),
-									"setup_wait");
-
-						}
-					};
-
-					YProgressWindowRepeat r = new YProgressWindowRepeat(I18N.t("Warten auf Fertigstellung der Installation vom RTP {0}",
-							name), "rtp");
-					// start
-					SystemHelper.runExternal(new String[] { ex.getAbsolutePath() }, true);
-
-					r.close();
-				}
-
+			// found?
+			if (url == null || url.length() == 0 || url.equals("null")) {
 				return isRTPinstalledGui(name, rgssVersion, false);
 			}
 
-			// ask user
-			if (erg == 1) {
-				File rtpFolder = EditorIntegration.openDialog(false, true)[0];
-				if (rtpFolder == null) {
-					return isRTPinstalledGui(name, rgssVersion, false);
-				} else {
-					return rtpFolder;
-				}
+			// get file ending
+			String[] s = url.split("/");
+
+			// download
+			File ex = new File(YAamsCore.tmpFolder, s[s.length - 1]);
+			NetHelper.downloadFile(ex, url);
+
+			// extract or run?
+			if (url.endsWith(".zip")) {
+				// create folder
+				FileHelper.mkdirs(getRTPFilename(name, rgssVersion));
+				// extract
+				FileHelper.extractArchive(ex, getRTPFilename(name, rgssVersion));
+			} else {
+				// start
+				SystemHelper.viewFile(ex);
+
+				final String rtpName = name;
+				// inform user
+				new SwingHelper(true) {
+
+					@Override
+					public void run() {
+						YDialog.ok(I18N.t("RTP {0} wird nun installiert.", rtpName),
+								I18N.t("Die Installation wurde nun gestartet. Drücken Sie ok erst, wenn die Installation beendet ist."),
+								"setup_wait");
+
+					}
+				};
 			}
 
-			// get it
-			return null;
+			return isRTPinstalledGui(name, rgssVersion, false);
 		}
 
-		return f;
+		// ask user
+		if (erg == 1) {
+			File rtpFolder = EditorIntegration.openDialog(false, true)[0];
+			if (rtpFolder == null) {
+				return isRTPinstalledGui(name, rgssVersion, false);
+			} else {
+				return rtpFolder;
+			}
+		}
+
+		// get it
+		return null;
 
 	}
 

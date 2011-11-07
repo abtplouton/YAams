@@ -1,0 +1,410 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
+
+import javax.swing.JLabel;
+
+import org.apache.log4j.Level;
+import org.ini4j.Profile.Section;
+import org.ini4j.Wini;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.Log;
+import de.yaams.maker.helper.gui.YEx;
+import de.yaams.maker.helper.gui.YMessagesDialog;
+import de.yaams.maker.helper.gui.form.FormCheckbox;
+import de.yaams.maker.helper.gui.form.FormInfo;
+import de.yaams.maker.helper.gui.form.FormSwing;
+import de.yaams.maker.helper.gui.form.FormTextField;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+import de.yaams.maker.helper.gui.form.validator.ValidatorBase;
+import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.programm.YAamsCore;
+import de.yaams.maker.programm.environment.YLevel;
+
+/**
+ * @author abby
+ * 
+ */
+public class PluginInfo {
+
+	public static enum STAGE {
+		USEABLE, WAIT, NOTUSEABLE
+	};
+
+	protected String id, title;
+	protected transient boolean useable = false;
+	protected boolean disabled = false;
+	protected File path;
+	protected Map<String, String> online, install;
+	protected transient BasePlugin startedPluginClass;
+	protected transient STAGE stage = STAGE.USEABLE;
+	protected transient JLabel status;
+	protected transient String icon;
+
+	/**
+	 * Create a new
+	 * 
+	 * @param path
+	 */
+	public PluginInfo(File path) {
+		id = path.getName().toLowerCase();
+		this.path = path;
+		disabled = false;
+	}
+
+	/**
+	 * Set Stage
+	 * 
+	 * @param mess
+	 */
+	protected STAGE setMessage(String mess, YMessagesDialog ymd, STAGE stage, boolean toLog) {
+		// add to the error screen?
+		if (toLog) {
+			ymd.add(mess, Level.INFO_INT);
+		} else if (stage != STAGE.USEABLE) {
+			Log.ger.info(mess);
+		}
+		// set it
+		this.stage = stage;
+		status = new JLabel(mess);
+		status.setIcon(IconCache.get(stage == STAGE.NOTUSEABLE ? "error" : "ok"));
+		return stage;
+
+	}
+
+	/**
+	 * Get the version of this plugin
+	 * 
+	 * @return
+	 */
+	public double getVersion() {
+		if (install != null) {
+			return Double.valueOf(getElement("version", "0"));
+		} else {
+			return Double.valueOf(getOnlineElement("version", "0"));
+		}
+	}
+
+	/**
+	 * Can this plugin be startd?
+	 * 
+	 * @param ymd
+	 * @param plugins
+	 * @return
+	 */
+	public STAGE canUse(YMessagesDialog ymd, String[] plugins) {
+		// can use?
+		if (disabled) {
+			return setMessage(I18N.t("{0} ist deaktiviert.", id), ymd, STAGE.NOTUSEABLE, false);
+		}
+
+		// exist folder?
+		if (!path.exists()) {
+			FileHelper.mkdirs(path);
+			return setMessage(I18N.t("{0} ist nicht installiert.", id), ymd, STAGE.NOTUSEABLE, false);
+		}
+
+		// load ini?
+		File i = new File(path, id + ".ini");
+		if (i.exists()) {
+			if (install == null) {
+				try {
+					Wini ini = new Wini(i);
+					install = ini.get(id);
+				} catch (Throwable t) {
+					ymd.add(YEx.toString(I18N.t("Kann {0} nicht lesen.", i), t, true), Level.INFO_INT);
+				}
+
+				// can use?
+				if (getElement("core", null) != null && getElement("core", " ").indexOf(Double.toString(YAamsCore.VERSION)) == -1) {
+					return setMessage(I18N.t("Kann {0} unter {1} nicht starten, da es für {2} geschrieben wurde.", getTitle(),
+							YAamsCore.TITLE, getElement("core", "MISSING CORE")), ymd, STAGE.NOTUSEABLE, true);
+				}
+
+				// check class
+				if (getElement("class", null) == null) {
+					return setMessage(I18N.t("Kann {0} nicht starten, da keine Startklasse angegeben wurde.", getTitle()), ymd,
+							STAGE.NOTUSEABLE, true);
+				}
+			}
+		} else {
+			return setMessage(I18N.t("Nicht installiert.", getTitle()), ymd, STAGE.NOTUSEABLE, false);
+		}
+
+		// load online info?
+		if (online == null) {
+			i = new File(path, "online.ini");
+			if (i.exists()) {
+				try {
+					Wini ini = new Wini(i);
+					online = ini.get(id);
+				} catch (Throwable t) {
+					ymd.add(YEx.toString(I18N.t("Kann {0} nicht lesen.", i), t, true), Level.INFO_INT);
+				}
+			}
+		}
+
+		// check depend
+		String[] depend = getElement("depend", "").split(" ");
+		for (String id : depend) {
+			// skip?
+			if (id == null || id.length() == 0) {
+				continue;
+			}
+
+			System.out.println(getTitle() + "need" + id);
+			System.out.println(PluginLoader.isInstall(id));
+			System.out.println(PluginLoader.get(id).isUseable());
+			System.out.println(Arrays.asList(plugins));
+			System.out.println(Arrays.asList(plugins).contains(id));
+
+			// check it
+			if (PluginLoader.isInstall(id)) {
+				if (PluginLoader.get(id).isDisabled()) {
+					System.out.println("disabled " + id);
+					return setMessage(I18N.t("Kann {0} nicht starten, da benötigtes Plugin {1} deaktiviert ist.", getTitle(), id), ymd,
+							STAGE.NOTUSEABLE, true);
+				}
+			} else {
+				// in wait query?
+				if (Arrays.asList(plugins).contains(id)) {
+					System.out.println("wait");
+					return STAGE.WAIT;
+				}
+
+				System.out.println("not found " + id);
+				// not found?
+				return setMessage(I18N.t("Kann {0} nicht starten, da benötigtes Modul {1} nicht installiert ist.", getTitle(), id), ymd,
+						STAGE.NOTUSEABLE, true);
+			}
+			System.out.println("do nothing");
+		}
+
+		// add search folder
+		try {
+			// add path
+			PluginLoader.addSearchFolder(path);
+		} catch (Throwable t) {
+			return setMessage(YEx.toString(I18N.t("Kann Ordner {0} nicht hinzufügen", path), t, true), ymd, STAGE.NOTUSEABLE, true);
+		}
+
+		// start it
+		try {
+			startedPluginClass = (BasePlugin) Class.forName(getElement("class", null)).newInstance();
+			startedPluginClass.setInfo(this);
+
+			// start?
+			if (!startedPluginClass.useable(ymd)) {
+				startedPluginClass = null;
+				return STAGE.NOTUSEABLE;
+			}
+
+			// start it
+			if (startedPluginClass != null) {
+				startedPluginClass.start();
+			}
+
+		} catch (Throwable t) {
+			startedPluginClass = null;
+			return setMessage(YEx.toString(I18N.t("Kann Plugin {0} nicht starten.", getTitle()), t, true), ymd, STAGE.NOTUSEABLE, true);
+		}
+
+		// can't start?
+		if (startedPluginClass == null) {
+			return setMessage(I18N.t("Kann Plugin {0} nicht starten.", getTitle()), ymd, STAGE.NOTUSEABLE, true);
+		}
+
+		useable = true;
+
+		Log.ger.info("Finish Loading of " + getTitle());
+		return setMessage(I18N.t("Alles ok", getTitle()), ymd, STAGE.USEABLE, false);
+	}
+
+	/**
+	 * Can this plugin be used
+	 * 
+	 * @return
+	 */
+	public boolean isDisabled() {
+		return stage == STAGE.NOTUSEABLE;
+	}
+
+	/**
+	 * @return Get the ID
+	 */
+	public String getOnlineElement(String name, String value) {
+		if (online == null || !online.containsKey(name)) {
+			return value;
+		}
+		return online.get(name);
+	}
+
+	/**
+	 * Get the title of this plugin
+	 * 
+	 * @return
+	 */
+	public String getTitle() {
+		if (install != null) {
+			String s = I18N.t("{0} {1}", getElement("title", id), getElement("version", "0"));
+			return disabled ? I18N.t("{0} (deaktiviert)", s) : s;
+		} else {
+			return I18N.t("{0} {1}", getOnlineElement("title", id), getOnlineElement("version", "0"));
+		}
+	}
+
+	/**
+	 * Get the desc of this plugin
+	 * 
+	 * @return
+	 */
+	public String getDesc() {
+		if (install != null) {
+			return getElement("desc", id);
+		} else {
+			return getOnlineElement("desc", id);
+		}
+	}
+
+	/**
+	 * Get the image
+	 * 
+	 * @return
+	 */
+	public Object getImg() {
+		if (icon == null) {
+			icon = getElement("icon", id);
+			if (!IconCache.exist(icon)) {
+				if (install == null) {
+					icon = "web_plugin";
+				} else {
+					icon = "plugin";
+				}
+			}
+		}
+		return icon;
+	}
+
+	/**
+	 * @return Get the ID
+	 */
+	public String getElement(String name, String value) {
+		if (install == null || !install.containsKey(name)) {
+			return value;
+		}
+		return install.get(name);
+	}
+
+	/**
+	 * Get more informations about this plugin
+	 * 
+	 * @return
+	 */
+	public FormBuilder getMoreInfo() {
+		FormBuilder b = new FormBuilder("plugin.moreinfo");
+		b.addElement("basic.name", new FormInfo(I18N.t("Info"), getDesc()).setSorting(-1));
+		b.addElement("basic.author", new FormInfo(I18N.t("Autor"), getElement("author", "unknown")));
+		if (YLevel.IS_ADVANCED) {
+			b.addElement("basic.folder", new FormTextField(I18N.t("Path"), path.getAbsolutePath()));
+		}
+		b.addElement("basic.status", new FormSwing(I18N.t("Status"), status));
+		b.addElement("basic.hp", new FormTextField(I18N.t("Homepage"), getElement("homepage", "-")));
+		b.addElement("basic.version", new FormInfo(I18N.t("Inst. Version"), getElement("version", "0")));
+		b.addElement("basic.versiono", new FormInfo(I18N.t("Online Version"), getOnlineElement("version", "0")));
+		return b;
+	}
+
+	/**
+	 * Get the loading status
+	 * 
+	 * @return
+	 */
+	public JLabel getStatusMessage() {
+		return status;
+	}
+
+	/**
+	 * @return the disabled
+	 */
+	public Boolean getDisabled() {
+		return disabled;
+	}
+
+	/**
+	 * @param disabled
+	 *            the disabled to set
+	 */
+	public void setDisabled(Boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	/**
+	 * @return the path
+	 */
+	public File getPath() {
+		return path;
+	}
+
+	/**
+	 * @param path
+	 *            the path to set
+	 */
+	public void setPath(File path) {
+		this.path = path;
+	}
+
+	/**
+	 * Check for a new version
+	 * 
+	 * @param section
+	 */
+	public void checkOnline(Section section, FormBuilder form) {
+		// set it
+		online = section;
+
+		// is install & has new Version?
+		if (!getElement("version", "-1").equals("-1")) {
+			if (!getOnlineElement("version", "0").equals(getElement("version", "0"))) {
+
+				if (status != null) {
+					status.setText(I18N.t("{0} auf {1} updaten", getTitle(), getOnlineElement("version", "0")));
+					status.setIcon(IconCache.get("web"));
+				}
+				form.addElement("basic." + id, new FormCheckbox(
+						I18N.t("{0} auf {1} updaten", getTitle(), getOnlineElement("version", "0")), true)
+						.addValidator(new ValidatorBase() {
+
+							@Override
+							public void isValide(YMessagesDialog y) {
+								// dl
+								if (form.getContentAsString().equals("true")) {
+									PluginLoader.installFromOnline(id);
+								}
+
+							}
+						}));
+			}
+		} else {
+			if (status != null) {
+				status.setText(I18N.t("Installation von {0} möglich", getTitle()));
+				status.setIcon(IconCache.get("setup"));
+			}
+
+		}
+
+	}
+
+	/**
+	 * @return the useable
+	 */
+	public Boolean isUseable() {
+		return useable;
+	}
+}

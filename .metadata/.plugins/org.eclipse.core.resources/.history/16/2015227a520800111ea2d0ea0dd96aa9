@@ -1,0 +1,125 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.rightclick;
+
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.helper.gui.list.YSimpleList;
+
+/**
+ * @author abt
+ * 
+ */
+public class YRightClickMenuList {
+
+	/**
+	 * Create a new RightClickMenu
+	 */
+	public static void install(final YSimpleList<?> list) {
+
+		list.getList().addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent me) {
+				mousePressed(me);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent me) {
+				// right click?
+				if (me.isPopupTrigger()) {
+					// create popup menu and show
+					JPopupMenu menu = new JPopupMenu();
+					if (list.isAdd()) {
+						menu.add(new AddAction(list));
+					}
+					if (list.isDelete()) {
+						menu.add(new DeleteAction(list));
+					}
+					menu.addSeparator();
+
+					// show it
+					Point pt = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), list.getList());
+					menu.show(list.getList(), pt.x, pt.y);
+
+				}
+
+			}
+		});
+
+	}
+
+	static class DeleteAction extends AbstractAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+		protected YSimpleList<?> list;
+
+		public DeleteAction(YSimpleList<?> list) {
+			super(I18N.t("Delete"), IconCache.get("del"));
+			this.list = list;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			list.delete();
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return !list.getList().isSelectionEmpty();
+		}
+	}
+
+	static class AddAction extends AbstractAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+		protected YSimpleList<?> list;
+
+		public AddAction(YSimpleList<?> list) {
+			super(I18N.t("Add"), IconCache.get("add"));
+			this.list = list;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			list.add();
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return true;
+		}
+	}
+
+	static class CopyAction extends AbstractAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+		protected YSimpleList<?> list;
+
+		public CopyAction(YSimpleList<?> list) {
+			super(I18N.t("Copy"), IconCache.get("copy"));
+			this.list = list;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			StringSelection stringSelection = new StringSelection(aString);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, this);
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return !list.getList().isSelectionEmpty();
+		}
+	}
+}

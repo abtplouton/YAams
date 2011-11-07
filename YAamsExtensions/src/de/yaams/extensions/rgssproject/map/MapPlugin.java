@@ -35,6 +35,7 @@ import de.yaams.extensions.rgssproject.map.nevent.command.SceneCallCommand;
 import de.yaams.extensions.rgssproject.map.nevent.command.ScriptCommand;
 import de.yaams.extensions.rgssproject.map.nevent.command.SetWindowSkinCommand;
 import de.yaams.extensions.rgssproject.map.nevent.command.SwitchCommand;
+import de.yaams.extensions.rgssproject.map.nevent.command.TeleportCommand;
 import de.yaams.extensions.rgssproject.map.nevent.command.TransitionCommand;
 import de.yaams.extensions.rgssproject.map.nevent.command.VariableCommand;
 import de.yaams.extensions.rgssproject.map.nevent.command.WaitCommand;
@@ -117,6 +118,8 @@ public class MapPlugin {
 		EventCommandManagement.registerM(new AudioSetFighCommand(), 132, 133);
 
 		EventCommandManagement.registerM(new PermissionCommand(), 134, 135, 136);
+
+		EventCommandManagement.registerM(new TeleportCommand(), 201, 202);
 
 		EventCommandManagement.registerM(new TransitionCommand(), 221, 222);
 

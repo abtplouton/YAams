@@ -59,7 +59,10 @@ public class FormDBComboBox extends FormComboBox {
 		// set it
 		values = buildList();
 		create(new DefaultComboBoxModel(values));
-		box.setSelectedIndex(RubyHelper.toInt(holder, value) - startFix);
+		int id = RubyHelper.toInt(holder, value) - startFix;
+		if (id < values.length) {
+			box.setSelectedIndex(id);
+		}
 
 		// save it
 		addChangeListener(new FormElementChangeListener() {
@@ -115,7 +118,7 @@ public class FormDBComboBox extends FormComboBox {
 					YaFrame.open(TabEvent.buildParameter(RGSS1Helper.getTabID(type), project, null));
 				} else {
 					YaFrame.open(TabEvent.buildParameter(RGSS1Helper.getTabID(type), project,
-							JavaHelper.createHashStringObj("select", Integer.toString(box.getSelectedIndex() - startFix + 1))));
+							JavaHelper.createHashString("select", Integer.toString(box.getSelectedIndex() - startFix + 1))));
 				}
 			}
 		}), BorderLayout.EAST);

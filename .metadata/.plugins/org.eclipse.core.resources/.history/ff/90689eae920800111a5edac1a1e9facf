@@ -1,0 +1,203 @@
+/**
+ * 
+ */
+package de.yaams.maker.helper.gui.rightclick;
+
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+
+import de.yaams.maker.helper.FileHelper;
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.icons.IconCache;
+import de.yaams.maker.helper.gui.list.YSimpleList;
+import de.yaams.maker.helper.integration.EditorIntegration;
+import de.yaams.maker.programm.environment.YLevel;
+
+/**
+ * @author abt
+ * 
+ */
+public class YRightClickMenuList {
+
+	/**
+	 * Create a new RightClickMenu
+	 */
+	public static void install(final YSimpleList<?> comp) {
+
+		comp.getList().addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent me) {
+				mousePressed(me);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent me) {
+				// right click?
+				if (me.isPopupTrigger()) {
+					// create popup menu and show
+					JPopupMenu menu = new JPopupMenu();
+					if (comp.isAdd()) {
+						menu.add(new AddAction(comp));
+					}
+					if (comp.isDelete()) {
+						menu.add(new DeleteAction(comp));
+					}
+					menu.addSeparator();
+					menu.add(new CopyAction(comp));
+					menu.add(new PasteAction(comp));
+
+					if (YLevel.IS_ADVANCED) {
+						menu.addSeparator();
+						menu.add(new ImportAction(comp));
+						menu.add(new ExportAction(comp));
+					}
+
+					// show it
+					Point pt = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), comp.getcomp());
+					menu.show(comp.getcomp(), pt.x, pt.y);
+
+				}
+
+			}
+		});
+
+	}
+
+	static abstract class BasecompAction extends BaseAction<YSimpleList<?>> {
+
+		private static final long serialVersionUID = 7842379209328976687L;
+
+		public BasecompAction(String name, String icon, YSimpleList<?> comp) {
+			super(name, icon, comp);
+		}
+	};
+
+	static class DeleteAction extends BasecompAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+
+		public DeleteAction(YSimpleList<?> comp) {
+			super(I18N.t("Delete"), "del", comp);
+		}
+
+		@Override
+		public void run(ActionEvent e) {
+			comp.delete();
+		}
+
+		@Override
+		public boolean isActive() {
+			return !comp.getcomp().isSelectionEmpty();
+		}
+	}
+
+	static class AddAction extends BasecompAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+
+		public AddAction(YSimpleList<?> comp) {
+			super(I18N.t("Add"), "add", comp);
+		}
+
+		@Override
+		public void run(ActionEvent e) {
+			comp.add();
+		}
+
+		@Override
+		public boolean isActive() {
+			return true;
+		}
+	}
+
+	static class CopyAction extends BasecompAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+
+		public CopyAction(YSimpleList<?> comp) {
+			super(I18N.t("Copy"), "copy", comp);
+		}
+
+		@Override
+		public void run(ActionEvent e) {
+			ClipboardHelper.set(comp.getSelectedObject());
+		}
+
+		@Override
+		public boolean isActive() {
+			return !comp.getcomp().isSelectionEmpty();
+		}
+	}
+
+	static class ImportAction extends BasecompAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+
+		public ImportAction(YSimpleList<?> comp) {
+			super(I18N.t("Import"), "folder", comp);
+			this.comp = comp;
+		}
+
+		@Override
+		public void run(ActionEvent e) {
+			File[] fs = EditorIntegration.openDialog(true, false);
+
+			// include all
+			for (File f : fs) {
+				Object o = FileHelper.loadXML(f);
+				if (o != null) {
+					comp.addExtern(o);
+				}
+			}
+		}
+
+		@Override
+		public boolean isActive() {
+			return true;
+		}
+	}
+
+	static class ExportAction extends BasecompAction {
+		private static final long serialVersionUID = -2425514124546515657L;
+
+		public ExportAction(YSimpleList<?> comp) {
+			super(I18N.t("Export"), "arrow", comp);
+		}
+
+		@Override
+		public void run(ActionEvent e) {
+			File f = EditorIntegration.saveDialog();
+			if (f != null) {
+				FileHelper.saveXML(f, comp.getSelectedObject());
+			}
+		}
+
+		@Override
+		public boolean isActive() {
+			return !comp.getcomp().isSelectionEmpty();
+		}
+	}
+
+	// @author Santhosh Kumar T - santhosh@in.fiorano.com
+	static class PasteAction extends BasecompAction {
+		private static final long serialVersionUID = -4162711823686660551L;
+
+		public PasteAction(YSimpleList<?> comp) {
+			super(I18N.t("Paste"), "paste", comp);
+		}
+
+		@Override
+		public void run(ActionEvent e) {
+			comp.addExtern(ClipboardHelper.get());
+		}
+
+		@Override
+		public boolean isActive() {
+			return comp.getObjectSize() > 0 && ClipboardHelper.contains(comp.getObject(0).getClass(,comp);
+
+		}
+	}
+}

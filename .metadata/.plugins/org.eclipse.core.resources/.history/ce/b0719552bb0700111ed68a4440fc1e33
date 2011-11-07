@@ -1,0 +1,47 @@
+/**
+ * 
+ */
+package de.yaams.maker.programm.plugins.newcore;
+
+import java.awt.LayoutManager;
+
+import javax.swing.JPanel;
+
+import de.yaams.maker.helper.I18N;
+import de.yaams.maker.helper.gui.form.FormInfo;
+import de.yaams.maker.helper.gui.form.core.FormBuilder;
+
+/**
+ * @author abby
+ *
+ */
+public class PluginPanel extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4570354101992039447L;
+
+	/**
+	 * @param arg0
+	 */
+	public PluginPanel(JComponent base) {
+		super(new GridLayout(1,1));
+		
+		//build form
+		FormBuilder f = new FormBuilder("plugins.details");
+		
+		//has plugins?
+		if (PluginLoader.getPlugins().size() == 0){
+			f.addElement("basic.error", new FormInfo("", I18N.t("Kein Plugin gefunden. Wählen Online prüfen aus, um die Liste "
+					+ "zu aktualisieren, oder füge manuell Plugins hinzu.")).setIcon("plugin_error", 32));
+		}
+		
+		//run over all
+		for(String id:PluginLoader.getPlugins().keySet()){
+			
+		}
+		
+	}
+
+}

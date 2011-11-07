@@ -66,7 +66,7 @@ public class VariableSwitchSelector extends YArrayList<SystemGObject> {
 	}
 
 	@Override
-	protected void add() {
+	public void add() {
 		Ruby run = RGSS1Helper.get(project, type).get(1).getObject().getRuntime();
 
 		// build Object

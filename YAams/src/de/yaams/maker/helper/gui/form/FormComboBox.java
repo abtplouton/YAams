@@ -6,8 +6,11 @@ package de.yaams.maker.helper.gui.form;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
+import de.yaams.maker.helper.I18N;
 import de.yaams.maker.helper.gui.AE;
+import de.yaams.maker.helper.gui.icons.IconCache;
 
 /**
  * @author abt
@@ -81,8 +84,15 @@ public class FormComboBox extends FormSaveElement {
 	 */
 	protected void create(final DefaultComboBoxModel model) {
 		this.model = model;
-		box = new JComboBox(model);
-		element = box;
+
+		// has elements?
+		if (model == null || model.getSize() == 0) {
+			box = new JComboBox();
+			element = new JLabel(I18N.t("Keine Elemente angegeben"), IconCache.get("warn"), JLabel.LEFT);
+		} else {
+			box = new JComboBox(model);
+			element = box;
+		}
 	}
 
 	/**

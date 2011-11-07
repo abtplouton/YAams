@@ -50,7 +50,8 @@ public class YEventCodeList extends YArrayList<EventCode> {
 	 * @see de.yaams.maker.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {}
+	public void add() {
+	}
 
 	/*
 	 * (non-Javadoc)

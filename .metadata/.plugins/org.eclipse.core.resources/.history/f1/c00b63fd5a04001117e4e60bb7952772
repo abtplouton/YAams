@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package de.yaams.extensions.rgssproject.database.form;
+
+import de.yaams.maker.helper.gui.form.FormCheckbox;
+
+/**
+ * @author abby
+ *
+ */
+public class FormFlags extends FormCheckbox {
+
+	/**
+	 * @param title
+	 * @param selected
+	 */
+	public FormFlags(String title, boolean selected) {
+		super(title, selected);
+		// TODO Auto-generated constructor stub
+	}
+
+}

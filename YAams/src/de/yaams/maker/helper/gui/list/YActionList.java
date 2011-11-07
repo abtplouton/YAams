@@ -25,7 +25,7 @@ public abstract class YActionList extends YBasisListElementArrayList {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {
+	public void add() {
 	}
 
 	/*

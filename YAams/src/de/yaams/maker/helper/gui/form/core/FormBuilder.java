@@ -283,6 +283,13 @@ public class FormBuilder {
 		// inform
 		ExtentionManagement.work("form." + id, objects);
 
+		// inform all listerns
+		for (String head : headers.keySet()) {
+			for (String ele : headers.get(head).getElements().keySet()) {
+				headers.get(head).get(ele).informListeners();
+			}
+		}
+
 		// collect
 		JComponent main = getMainPanel(withAutoSaveFunction);
 		JComponent buttons = getButtonBar(withAutoSaveFunction);

@@ -34,9 +34,11 @@ import de.yaams.maker.helper.gui.list.YBasisListElementArrayList;
 import de.yaams.maker.programm.YAamsCore;
 import de.yaams.maker.programm.YaFrame;
 import de.yaams.maker.programm.environment.YLevel;
+import de.yaams.maker.programm.project.tab.ProjectTab;
 import de.yaams.maker.programm.tabs.BasicTabEvent;
 import de.yaams.maker.programm.tabs.HomeTab;
 import de.yaams.maker.programm.tabs.TabEvent;
+import de.yaams.maker.programm.tabs.YaTab;
 
 /**
  * @author Nebli
@@ -52,7 +54,7 @@ public class ProjectList extends YBasisListElementArrayList {
 	 */
 	public ProjectList(ProjectPanel panel) {
 		super(ProjectManagement.projects);
-		this.ppanel = panel;
+		ppanel = panel;
 		add = true;
 		open = true;
 		delete = true;
@@ -251,7 +253,7 @@ public class ProjectList extends YBasisListElementArrayList {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
 	@Override
-	protected void add() {
+	public void add() {
 
 		// get form
 		final FormBuilder f = getMainForm(null);
@@ -440,7 +442,8 @@ public class ProjectList extends YBasisListElementArrayList {
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#info()
 	 */
 	@Override
-	protected void info() {}
+	protected void info() {
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -450,13 +453,27 @@ public class ProjectList extends YBasisListElementArrayList {
 	@Override
 	public void delObject(final int id) {
 
-		if (getSelectedObject() instanceof Project
-				&& YDialog.askUser(I18N.t("Dateien mitlöschen?"), "project.file.del", "trash_folder",
-						I18N.t("Sollen alle Dateien & Ordner in {0} mitgelöscht werden?", ((Project) getSelectedObject()).getPath()),
-						I18N.t("Dateien löschen"), I18N.t("Dateien behalten"), "trash", "folder_ok")) {
-			FileHelper.deleteTree(((Project) getSelectedObject()).getPath());
-		}
+		// close tabs
+		if (getSelectedObject() instanceof Project) {
+			for (YaTab tab : YaFrame.get().getAllOpenTabs()) {
+				if (tab instanceof ProjectTab) {
+					ProjectTab p = (ProjectTab) tab;
+					if (p.getProject().equals(getSelectedObject())) {
+						YaFrame.close(p.getId());
+					}
+				}
+			}
 
+			// remove cache
+			ProjectManagement.getProjects().remove(getSelectedObject());
+
+			// delete files?
+			if (YDialog.askUser(I18N.t("Dateien mitlöschen?"), "project.file.del", "trash_folder",
+					I18N.t("Sollen alle Dateien & Ordner in {0} mitgelöscht werden?", ((Project) getSelectedObject()).getPath()),
+					I18N.t("Dateien löschen"), I18N.t("Dateien behalten"), "trash", "folder_ok")) {
+				FileHelper.deleteTree(((Project) getSelectedObject()).getPath());
+			}
+		}
 		super.delObject(id);
 
 	}

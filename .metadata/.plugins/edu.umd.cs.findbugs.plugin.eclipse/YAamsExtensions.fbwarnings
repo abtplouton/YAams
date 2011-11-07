@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.3.9" sequence="132" timestamp="1320681340875" analysisTimestamp="1320681340268" release="">
+  <Project></Project>
+  <BugInstance type="MS_PKGPROTECT" priority="2" abbrev="MS" category="MALICIOUS_CODE" first="91">
+    <Class classname="de.yaams.extensions.rgssproject.RTP">
+      <SourceLine classname="de.yaams.extensions.rgssproject.RTP" sourcefile="RTP.java" sourcepath="de/yaams/extensions/rgssproject/RTP.java"/>
+    </Class>
+    <Field classname="de.yaams.extensions.rgssproject.RTP" name="rtps" signature="Ljava/util/HashMap;" isStatic="true">
+      <SourceLine classname="de.yaams.extensions.rgssproject.RTP" start="49" end="49" startBytecode="0" endBytecode="0" sourcefile="RTP.java" sourcepath="de/yaams/extensions/rgssproject/RTP.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR" priority="2" abbrev="UR" category="CORRECTNESS" first="129">
+    <Class classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Class>
+    <Method classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" name="updateField" signature="()V" isStatic="false">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="91" end="109" startBytecode="0" endBytecode="188" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Method>
+    <Field classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" name="graph" signature="Lorg/jruby/RubyString;" isStatic="false">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Field>
+    <Method classname="de.yaams.maker.programm.ress.FormRessElement" name="&lt;init&gt;" signature="(Ljava/lang/String;Lde/yaams/maker/programm/project/Project;Ljava/lang/String;Ljava/lang/String;Lde/yaams/maker/programm/ress/FormRessElement$Typ;)V" isStatic="false" role="METHOD_SUPERCLASS_CONSTRUCTOR">
+      <SourceLine classname="de.yaams.maker.programm.ress.FormRessElement" start="37" end="46" startBytecode="0" endBytecode="274" sourcefile="FormRessElement.java" sourcepath="de/yaams/maker/programm/ress/FormRessElement.java"/>
+    </Method>
+    <SourceLine classname="de.yaams.maker.programm.ress.FormRessElement" start="45" end="45" startBytecode="84" endBytecode="84" sourcefile="FormRessElement.java" sourcepath="de/yaams/maker/programm/ress/FormRessElement.java" role="SOURCE_LINE_CALLED_FROM_SUPERCLASS_AT"/>
+    <Method classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" name="&lt;init&gt;" signature="(Ljava/lang/String;Lde/yaams/maker/programm/project/Project;Ljava/lang/String;Lorg/jruby/RubyString;Ljava/lang/Object;Ljava/lang/Object;)V" isStatic="false" role="METHOD_CONSTRUCTOR">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="60" end="83" startBytecode="0" endBytecode="515" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Method>
+    <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="64" end="64" startBytecode="62" endBytecode="62" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java" role="SOURCE_LINE_FIELD_SET_TOO_LATE_AT"/>
+    <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="103" end="103" startBytecode="52" endBytecode="52" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+  </BugInstance>
+  <BugInstance type="UR_UNINIT_READ_CALLED_FROM_SUPER_CONSTRUCTOR" priority="2" abbrev="UR" category="CORRECTNESS" first="129">
+    <Class classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Class>
+    <Method classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" name="updateField" signature="()V" isStatic="false">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="91" end="109" startBytecode="0" endBytecode="188" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Method>
+    <Field classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" name="graph" signature="Lorg/jruby/RubyString;" isStatic="false">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Field>
+    <Method classname="de.yaams.maker.programm.ress.FormRessElement" name="&lt;init&gt;" signature="(Ljava/lang/String;Lde/yaams/maker/programm/project/Project;Ljava/lang/String;Ljava/lang/String;Lde/yaams/maker/programm/ress/FormRessElement$Typ;)V" isStatic="false" role="METHOD_SUPERCLASS_CONSTRUCTOR">
+      <SourceLine classname="de.yaams.maker.programm.ress.FormRessElement" start="37" end="46" startBytecode="0" endBytecode="274" sourcefile="FormRessElement.java" sourcepath="de/yaams/maker/programm/ress/FormRessElement.java"/>
+    </Method>
+    <SourceLine classname="de.yaams.maker.programm.ress.FormRessElement" start="45" end="45" startBytecode="84" endBytecode="84" sourcefile="FormRessElement.java" sourcepath="de/yaams/maker/programm/ress/FormRessElement.java" role="SOURCE_LINE_CALLED_FROM_SUPERCLASS_AT"/>
+    <Method classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" name="&lt;init&gt;" signature="(Ljava/lang/String;Lde/yaams/maker/programm/project/Project;Ljava/lang/String;Lorg/jruby/RubyString;Ljava/lang/Object;Ljava/lang/Object;)V" isStatic="false" role="METHOD_CONSTRUCTOR">
+      <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="60" end="83" startBytecode="0" endBytecode="515" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+    </Method>
+    <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="64" end="64" startBytecode="62" endBytecode="62" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java" role="SOURCE_LINE_FIELD_SET_TOO_LATE_AT"/>
+    <SourceLine classname="de.yaams.extensions.rgssproject.database.form.FormGraphEle" start="104" end="104" startBytecode="59" endBytecode="59" sourcefile="FormGraphEle.java" sourcepath="de/yaams/extensions/rgssproject/database/form/FormGraphEle.java"/>
+  </BugInstance>
+  <BugInstance type="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" priority="2" abbrev="ST" category="STYLE" first="105">
+    <Class classname="de.yaams.extensions.rgssproject.script.ScriptTab">
+      <SourceLine classname="de.yaams.extensions.rgssproject.script.ScriptTab" sourcefile="ScriptTab.java" sourcepath="de/yaams/extensions/rgssproject/script/ScriptTab.java"/>
+    </Class>
+    <Method classname="de.yaams.extensions.rgssproject.script.ScriptTab" name="saveIntern" signature="()V" isStatic="false">
+      <SourceLine classname="de.yaams.extensions.rgssproject.script.ScriptTab" start="121" end="126" startBytecode="0" endBytecode="95" sourcefile="ScriptTab.java" sourcepath="de/yaams/extensions/rgssproject/script/ScriptTab.java"/>
+    </Method>
+    <Field classname="de.yaams.extensions.rgssproject.script.ScriptTab" name="scripts" signature="[Ljava/lang/Object;" isStatic="true">
+      <SourceLine classname="de.yaams.extensions.rgssproject.script.ScriptTab" sourcefile="ScriptTab.java" sourcepath="de/yaams/extensions/rgssproject/script/ScriptTab.java"/>
+    </Field>
+    <SourceLine classname="de.yaams.extensions.rgssproject.script.ScriptTab" start="121" end="121" startBytecode="10" endBytecode="10" sourcefile="ScriptTab.java" sourcepath="de/yaams/extensions/rgssproject/script/ScriptTab.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 7 Nov 2011 16:55:40 +0100" total_classes="3" referenced_classes="35" total_bugs="0" total_size="28" num_packages="4" vm_version="20.1-b02-383" cpu_seconds="1.33" clock_seconds="0.61" peak_mbytes="316.58" alloc_mbytes="379.25" gc_seconds="0.07">
+    <PackageStats package="de.yaams.extensions.devtools" total_bugs="0" total_types="3" total_size="28">
+      <ClassStats class="de.yaams.extensions.devtools.DevToolsPlugin" sourceFile="DevToolsPlugin.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="de.yaams.extensions.devtools.DevToolsPlugin$1" sourceFile="DevToolsPlugin.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="de.yaams.extensions.devtools.DevToolsPlugin$1$1" sourceFile="DevToolsPlugin.java" interface="false" size="9" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.yaams.extensions.rgssproject" total_bugs="0" total_types="0" total_size="0"></PackageStats>
+    <PackageStats package="de.yaams.extensions.rgssproject.database.form" total_bugs="0" total_types="0" total_size="0"></PackageStats>
+    <PackageStats package="de.yaams.extensions.rgssproject.script" total_bugs="0" total_types="0" total_size="0"></PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="16" invocations="57" avgMicrosecondsPerInvocation="284" maxMicrosecondsPerInvocation="3523" standardDeviationMircosecondsPerInvocation="456"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="17" invocations="35" avgMicrosecondsPerInvocation="494" maxMicrosecondsPerInvocation="2624" standardDeviationMircosecondsPerInvocation="661"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="27" invocations="35" avgMicrosecondsPerInvocation="772" maxMicrosecondsPerInvocation="4972" standardDeviationMircosecondsPerInvocation="1086"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="27" invocations="35" avgMicrosecondsPerInvocation="796" maxMicrosecondsPerInvocation="24005" standardDeviationMircosecondsPerInvocation="3983"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="37" invocations="807" avgMicrosecondsPerInvocation="46" maxMicrosecondsPerInvocation="1227" standardDeviationMircosecondsPerInvocation="90"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="104" invocations="534" avgMicrosecondsPerInvocation="196" maxMicrosecondsPerInvocation="37399" standardDeviationMircosecondsPerInvocation="1621"/>
+      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="118" invocations="2" avgMicrosecondsPerInvocation="59211" maxMicrosecondsPerInvocation="107902" standardDeviationMircosecondsPerInvocation="48691"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="157" invocations="536" avgMicrosecondsPerInvocation="293" maxMicrosecondsPerInvocation="47575" standardDeviationMircosecondsPerInvocation="2047"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History>
+    <AppVersion sequence="0" timestamp="1318169946590" release="" codeSize="0" numClasses="0"/>
+    <AppVersion sequence="1" timestamp="1318169946591" release="" codeSize="62" numClasses="4"/>
+    <AppVersion sequence="2" timestamp="1318170043731" release="" codeSize="26" numClasses="2"/>
+    <AppVersion sequence="3" timestamp="1318170129024" release="" codeSize="26" numClasses="2"/>
+    <AppVersion sequence="4" timestamp="1318170182081" release="" codeSize="7" numClasses="1"/>
+    <AppVersion sequence="5" timestamp="1318170429319" release="" codeSize="32" numClasses="2"/>
+    <AppVersion sequence="6" timestamp="1318170585276" release="" codeSize="36" numClasses="2"/>
+    <AppVersion sequence="7" timestamp="1318170629996" release="" codeSize="3" numClasses="1"/>
+    <AppVersion sequence="8" timestamp="1318170879102" release="" codeSize="3" numClasses="1"/>
+    <AppVersion sequence="9" timestamp="1318171416337" release="" codeSize="55" numClasses="4"/>
+    <AppVersion sequence="10" timestamp="1318171620326" release="" codeSize="29" numClasses="1"/>
+    <AppVersion sequence="11" timestamp="1318171794920" release="" codeSize="42" numClasses="4"/>
+    <AppVersion sequence="12" timestamp="1318171808504" release="" codeSize="34" numClasses="3"/>
+    <AppVersion sequence="13" timestamp="1318171821205" release="" codeSize="52" numClasses="4"/>
+    <AppVersion sequence="14" timestamp="1318172000015" release="" codeSize="26" numClasses="2"/>
+    <AppVersion sequence="15" timestamp="1318172185363" release="" codeSize="34" numClasses="3"/>
+    <AppVersion sequence="16" timestamp="1318172244662" release="" codeSize="35" numClasses="3"/>
+    <AppVersion sequence="17" timestamp="1318172477792" release="" codeSize="38" numClasses="2"/>
+    <AppVersion sequence="18" timestamp="1318172488638" release="" codeSize="36" numClasses="3"/>
+    <AppVersion sequence="19" timestamp="1318786826581" release="" codeSize="43" numClasses="2"/>
+    <AppVersion sequence="20" timestamp="1318789241030" release="" codeSize="44" numClasses="2"/>
+    <AppVersion sequence="21" timestamp="1319118424303" release="" codeSize="52" numClasses="4"/>
+    <AppVersion sequence="22" timestamp="1319118815544" release="" codeSize="45" numClasses="2"/>
+    <AppVersion sequence="23" timestamp="1319138926201" release="" codeSize="44" numClasses="2"/>
+    <AppVersion sequence="24" timestamp="1319285623242" release="" codeSize="46" numClasses="2"/>
+    <AppVersion sequence="25" timestamp="1319285724566" release="" codeSize="46" numClasses="2"/>
+    <AppVersion sequence="26" timestamp="1319286991604" release="" codeSize="47" numClasses="2"/>
+    <AppVersion sequence="27" timestamp="1319287990125" release="" codeSize="35" numClasses="3"/>
+    <AppVersion sequence="28" timestamp="1319292227365" release="" codeSize="48" numClasses="2"/>
+    <AppVersion sequence="29" timestamp="1320004909007" release="" codeSize="4" numClasses="1"/>
+    <AppVersion sequence="30" timestamp="1320004934725" release="" codeSize="4" numClasses="1"/>
+    <AppVersion sequence="31" timestamp="1320005746048" release="" codeSize="10" numClasses="2"/>
+    <AppVersion sequence="32" timestamp="1320005766868" release="" codeSize="10" numClasses="2"/>
+    <AppVersion sequence="33" timestamp="1320132837097" release="" codeSize="96" numClasses="8"/>
+    <AppVersion sequence="34" timestamp="1320133176178" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="35" timestamp="1320133300879" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="36" timestamp="1320133617576" release="" codeSize="20" numClasses="1"/>
+    <AppVersion sequence="37" timestamp="1320133619515" release="" codeSize="32" numClasses="2"/>
+    <AppVersion sequence="38" timestamp="1320133624483" release="" codeSize="40" numClasses="2"/>
+    <AppVersion sequence="39" timestamp="1320133737063" release="" codeSize="59" numClasses="2"/>
+    <AppVersion sequence="40" timestamp="1320133774539" release="" codeSize="33" numClasses="2"/>
+    <AppVersion sequence="41" timestamp="1320133789891" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="42" timestamp="1320133822403" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="43" timestamp="1320133901500" release="" codeSize="35" numClasses="2"/>
+    <AppVersion sequence="44" timestamp="1320133941044" release="" codeSize="35" numClasses="2"/>
+    <AppVersion sequence="45" timestamp="1320133945538" release="" codeSize="59" numClasses="2"/>
+    <AppVersion sequence="46" timestamp="1320133999113" release="" codeSize="36" numClasses="2"/>
+    <AppVersion sequence="47" timestamp="1320134037796" release="" codeSize="37" numClasses="2"/>
+    <AppVersion sequence="48" timestamp="1320134096043" release="" codeSize="37" numClasses="2"/>
+    <AppVersion sequence="49" timestamp="1320134100042" release="" codeSize="27" numClasses="2"/>
+    <AppVersion sequence="50" timestamp="1320134148497" release="" codeSize="68" numClasses="1"/>
+    <AppVersion sequence="51" timestamp="1320134637771" release="" codeSize="4" numClasses="1"/>
+    <AppVersion sequence="52" timestamp="1320134673449" release="" codeSize="4" numClasses="1"/>
+    <AppVersion sequence="53" timestamp="1320134930483" release="" codeSize="32" numClasses="1"/>
+    <AppVersion sequence="54" timestamp="1320135030606" release="" codeSize="33" numClasses="1"/>
+    <AppVersion sequence="55" timestamp="1320135152655" release="" codeSize="35" numClasses="1"/>
+    <AppVersion sequence="56" timestamp="1320135183586" release="" codeSize="37" numClasses="1"/>
+    <AppVersion sequence="57" timestamp="1320135207223" release="" codeSize="37" numClasses="1"/>
+    <AppVersion sequence="58" timestamp="1320135262983" release="" codeSize="97" numClasses="8"/>
+    <AppVersion sequence="59" timestamp="1320135345628" release="" codeSize="97" numClasses="8"/>
+    <AppVersion sequence="60" timestamp="1320135482778" release="" codeSize="65" numClasses="2"/>
+    <AppVersion sequence="61" timestamp="1320135491847" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="62" timestamp="1320135496076" release="" codeSize="68" numClasses="1"/>
+    <AppVersion sequence="63" timestamp="1320135542327" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="64" timestamp="1320135548670" release="" codeSize="34" numClasses="2"/>
+    <AppVersion sequence="65" timestamp="1320135755696" release="" codeSize="66" numClasses="2"/>
+    <AppVersion sequence="66" timestamp="1320136017123" release="" codeSize="95" numClasses="2"/>
+    <AppVersion sequence="67" timestamp="1320136212240" release="" codeSize="49" numClasses="1"/>
+    <AppVersion sequence="68" timestamp="1320136221410" release="" codeSize="49" numClasses="1"/>
+    <AppVersion sequence="69" timestamp="1320136225061" release="" codeSize="49" numClasses="1"/>
+    <AppVersion sequence="70" timestamp="1320136255811" release="" codeSize="49" numClasses="1"/>
+    <AppVersion sequence="71" timestamp="1320136496284" release="" codeSize="95" numClasses="2"/>
+    <AppVersion sequence="72" timestamp="1320136830644" release="" codeSize="50" numClasses="1"/>
+    <AppVersion sequence="73" timestamp="1320136874199" release="" codeSize="47" numClasses="1"/>
+    <AppVersion sequence="74" timestamp="1320136877486" release="" codeSize="60" numClasses="1"/>
+    <AppVersion sequence="75" timestamp="1320136992675" release="" codeSize="100" numClasses="2"/>
+    <AppVersion sequence="76" timestamp="1320137004375" release="" codeSize="49" numClasses="1"/>
+    <AppVersion sequence="77" timestamp="1320138244688" release="" codeSize="84" numClasses="2"/>
+    <AppVersion sequence="78" timestamp="1320138292622" release="" codeSize="84" numClasses="2"/>
+    <AppVersion sequence="79" timestamp="1320138300636" release="" codeSize="49" numClasses="1"/>
+    <AppVersion sequence="80" timestamp="1320138371302" release="" codeSize="12" numClasses="1"/>
+    <AppVersion sequence="81" timestamp="1320138397460" release="" codeSize="60" numClasses="1"/>
+    <AppVersion sequence="82" timestamp="1320138440862" release="" codeSize="60" numClasses="1"/>
+    <AppVersion sequence="83" timestamp="1320138556321" release="" codeSize="59" numClasses="1"/>
+    <AppVersion sequence="84" timestamp="1320138597227" release="" codeSize="88" numClasses="2"/>
+    <AppVersion sequence="85" timestamp="1320138789761" release="" codeSize="26" numClasses="1"/>
+    <AppVersion sequence="86" timestamp="1320138810466" release="" codeSize="27" numClasses="1"/>
+    <AppVersion sequence="87" timestamp="1320138843325" release="" codeSize="27" numClasses="1"/>
+    <AppVersion sequence="88" timestamp="1320138855841" release="" codeSize="27" numClasses="1"/>
+    <AppVersion sequence="89" timestamp="1320139777311" release="" codeSize="57" numClasses="3"/>
+    <AppVersion sequence="90" timestamp="1320139785531" release="" codeSize="57" numClasses="3"/>
+    <AppVersion sequence="91" timestamp="1320139854095" release="" codeSize="195" numClasses="4"/>
+    <AppVersion sequence="92" timestamp="1320140155733" release="" codeSize="106" numClasses="6"/>
+    <AppVersion sequence="93" timestamp="1320507601232" release="" codeSize="9" numClasses="1"/>
+    <AppVersion sequence="94" timestamp="1320507675180" release="" codeSize="8" numClasses="1"/>
+    <AppVersion sequence="95" timestamp="1320508439711" release="" codeSize="57" numClasses="3"/>
+    <AppVersion sequence="96" timestamp="1320511409847" release="" codeSize="425" numClasses="16"/>
+    <AppVersion sequence="97" timestamp="1320511419189" release="" codeSize="425" numClasses="16"/>
+    <AppVersion sequence="98" timestamp="1320511466700" release="" codeSize="9" numClasses="1"/>
+    <AppVersion sequence="99" timestamp="1320511974759" release="" codeSize="89" numClasses="7"/>
+    <AppVersion sequence="100" timestamp="1320512002296" release="" codeSize="20" numClasses="2"/>
+    <AppVersion sequence="101" timestamp="1320565704511" release="" codeSize="109" numClasses="6"/>
+    <AppVersion sequence="102" timestamp="1320566008392" release="" codeSize="184" numClasses="6"/>
+    <AppVersion sequence="103" timestamp="1320566581953" release="" codeSize="184" numClasses="6"/>
+    <AppVersion sequence="104" timestamp="1320566592065" release="" codeSize="184" numClasses="6"/>
+    <AppVersion sequence="105" timestamp="1320580176572" release="" codeSize="40" numClasses="1"/>
+    <AppVersion sequence="106" timestamp="1320580180884" release="" codeSize="41" numClasses="1"/>
+    <AppVersion sequence="107" timestamp="1320596321724" release="" codeSize="43" numClasses="1"/>
+    <AppVersion sequence="108" timestamp="1320598705234" release="" codeSize="53" numClasses="2"/>
+    <AppVersion sequence="109" timestamp="1320598890659" release="" codeSize="19" numClasses="1"/>
+    <AppVersion sequence="110" timestamp="1320598900213" release="" codeSize="68" numClasses="2"/>
+    <AppVersion sequence="111" timestamp="1320598942526" release="" codeSize="73" numClasses="2"/>
+    <AppVersion sequence="112" timestamp="1320599016040" release="" codeSize="78" numClasses="2"/>
+    <AppVersion sequence="113" timestamp="1320599095057" release="" codeSize="78" numClasses="2"/>
+    <AppVersion sequence="114" timestamp="1320599189290" release="" codeSize="82" numClasses="2"/>
+    <AppVersion sequence="115" timestamp="1320599249602" release="" codeSize="19" numClasses="1"/>
+    <AppVersion sequence="116" timestamp="1320599253205" release="" codeSize="85" numClasses="2"/>
+    <AppVersion sequence="117" timestamp="1320599275163" release="" codeSize="54" numClasses="2"/>
+    <AppVersion sequence="118" timestamp="1320599528757" release="" codeSize="22" numClasses="1"/>
+    <AppVersion sequence="119" timestamp="1320599690240" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="120" timestamp="1320600001154" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="121" timestamp="1320600061731" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="122" timestamp="1320600130205" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="123" timestamp="1320600150281" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="124" timestamp="1320600159787" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="125" timestamp="1320600181404" release="" codeSize="77" numClasses="2"/>
+    <AppVersion sequence="126" timestamp="1320609537912" release="" codeSize="193" numClasses="4"/>
+    <AppVersion sequence="127" timestamp="1320609910330" release="" codeSize="197" numClasses="4"/>
+    <AppVersion sequence="128" timestamp="1320610071378" release="" codeSize="193" numClasses="4"/>
+    <AppVersion sequence="129" timestamp="1320613557981" release="" codeSize="46" numClasses="1"/>
+    <AppVersion sequence="130" timestamp="1320661651174" release="" codeSize="109" numClasses="6"/>
+    <AppVersion sequence="131" timestamp="1320661723263" release="" codeSize="109" numClasses="6"/>
+  </History>
+</BugCollection>

@@ -15,7 +15,7 @@ import de.yaams.maker.helper.gui.YMessagesDialog;
 import de.yaams.maker.helper.gui.form.FormLink;
 import de.yaams.maker.helper.gui.form.core.FormBuilder;
 import de.yaams.maker.helper.gui.icons.IconCache;
-import de.yaams.maker.programm.plugins.core.BasePlugin;
+import de.yaams.maker.programm.plugins.BasePlugin;
 import de.yaams.maker.programm.ress.FormRessElement;
 import de.yaams.maker.programm.ress.RessPanel;
 import de.yaams.maker.programm.ress.RessourceList;

@@ -147,7 +147,7 @@ public class RubyHelper {
 			RubyArray ary = (RubyArray) holder;
 			int id = (Integer) index;
 
-			return Integer.valueOf(((Integer) ary.get(id)).toString());
+			return Integer.valueOf(((Long) ary.get(id)).toString());
 		}
 
 		return Integer.valueOf(getObj(holder, index).toString());
@@ -182,7 +182,7 @@ public class RubyHelper {
 
 		}
 
-		// arraylisr and index id?
+		// arraylist and index id?
 		if (holder instanceof ArrayList && index instanceof Integer) {
 			// get vars
 			ArrayList<IRubyObject> ary = (ArrayList<IRubyObject>) holder;

@@ -51,7 +51,7 @@ public class YDialog {
 			return -2;
 		} else if (c == 1) {
 			File[] files = EditorIntegration.openDialog(false, false);
-			if (files == null) {
+			if (files == null || files.length == 0) {
 				return -1;
 			}
 			return files[0];
@@ -71,7 +71,7 @@ public class YDialog {
 	public static void ok(final String title, final String mess, final Object icon) {
 
 		YMessagesDialog d = new YMessagesDialog(title, "ok" + title);
-		d.add(mess, Level.INFO_INT);
+		d.add(mess == null ? " " : mess, Level.INFO_INT);
 		d.setIcon(IconCache.getS(icon == null ? "yaams" : icon, 64));
 		d.getYesnoText()[0] = I18N.t("Ok");
 		d.getYesnoIcon()[0] = "ok";
@@ -161,7 +161,7 @@ public class YDialog {
 	 * @param addOkButton
 	 * @return true, the user select ok, or false otherwise
 	 */
-	public static boolean show(final String name, final String icon, final JComponent c, boolean addOKButton) {
+	public static boolean show(final String name, final Object icon, final JComponent c, boolean addOKButton) {
 		// build panel
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(new YHeader(name, icon), BorderLayout.NORTH);
@@ -232,7 +232,7 @@ public class YDialog {
 	 * @param f
 	 * @return true, user press ok, false otherwise
 	 */
-	public static boolean showForm(final String name, final String icon, final FormBuilder f) {
+	public static boolean showForm(final String name, final Object icon, final FormBuilder f) {
 
 		// add it
 		JComponent p = f.getPanel(true);
@@ -266,7 +266,7 @@ public class YDialog {
 	public static boolean askUser(String title, String id, String icon, String mess, String yes, String no, String yesIcon, String noIcon) {
 		// create it
 		YMessagesDialog y = new YMessagesDialog(title, id);
-		y.add(mess, Level.INFO_INT);
+		y.add(mess == null ? " " : mess, Level.INFO_INT);
 		y.setIcon(IconCache.get(icon, 64));
 		y.getYesnoText()[0] = yes;
 		y.getYesnoText()[1] = no;

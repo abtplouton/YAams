@@ -17,43 +17,44 @@ import de.yaams.maker.programm.project.Project;
  */
 public class SplitActionList extends YActionList {
 	private static final long serialVersionUID = -3909366254868019979L;
-	
+
 	protected JPanel content;
 	protected Project p;
 	protected ProjectSplitTab pst;
-	
+
 	/**
 	 * Create a new SplitActionList
 	 * 
 	 * @param ary
 	 */
-	public SplitActionList(final ProjectSplitTab pst, final JPanel content, final Project p,
-			final ArrayList<BasisListElement> ary) {
+	public SplitActionList(final ProjectSplitTab pst, final JPanel content, final Project p, final ArrayList<BasisListElement> ary) {
 		super(ary);
 		this.content = content;
 		this.p = p;
 		this.pst = pst;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#add()
 	 */
-	@Override protected void add() {
+	@Override
+	public void add() {
 		pst.add();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see de.yaams.packandgo.helper.gui.list.YSimpleList#configIntern()
 	 */
-	@Override protected void configIntern() {
+	@Override
+	protected void configIntern() {
 		((SplitActionListElement) getSelectedObject()).show(content, p);
-		
+
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -61,13 +62,15 @@ public class SplitActionList extends YActionList {
 	 * de.yaams.packandgo.helper.gui.list.YSimpleList#getModified(java.lang.
 	 * Object)
 	 */
-	@Override public boolean isModified(final BasisListElement o) {
+	@Override
+	public boolean isModified(final BasisListElement o) {
 		// is modifizied?
-		if (!pst.isModified() && o.isModified())
+		if (!pst.isModified() && o.isModified()) {
 			pst.setModified(true);
-		
+		}
+
 		// return it
 		return o.isModified();
 	}
-	
+
 }

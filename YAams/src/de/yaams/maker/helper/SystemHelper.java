@@ -265,4 +265,28 @@ public class SystemHelper {
 		// do it
 		System.exit(level);
 	}
+
+	/**
+	 * Method to restart yaams
+	 */
+	public static void restart() {
+		if (YDialog.askUser(I18N.t("Um die Änderungen zu übernehmen muss YAams neugestartet werden."), "system.restart", "yaams_restart",
+				null, I18N.t("Neu starten"), I18N.t("Später"), "ok", "cancel")) {
+			// restart it
+			YAamsCore.save();
+			SystemHelper.runExternal(
+					new String[] { "java", "-jar", "-Xmx1024", FileHelper.fileRelativeExist("yaams.jar").getAbsolutePath() }, false);
+
+			// wait
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				Log.ger.info("Thread can't sleep", e);
+			}
+
+			// close this
+			SystemHelper.exit(0);
+		}
+
+	}
 }

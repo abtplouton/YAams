@@ -47,6 +47,7 @@ import de.yaams.extensions.basemap.tiled.mapeditor.util.ConfirmingFileChooser;
 import de.yaams.extensions.basemap.tiled.mapeditor.widget.IntegerSpinner;
 import de.yaams.extensions.basemap.tiled.mapeditor.widget.VerticalStaticJPanel;
 import de.yaams.extensions.basemap.tiled.util.TiledConfiguration;
+import de.yaams.maker.helper.gui.YEx;
 
 /**
  * @version $Id$
@@ -436,7 +437,7 @@ public class ConfigurationDialog extends JDialog {
 					}
 				}
 			} catch (Exception e) {
-				System.out.println("Error while exporting configuration:\n" + e.toString());
+				YEx.info("Error while exporting configuration", e);
 			}
 		}
 	}
@@ -459,7 +460,7 @@ public class ConfigurationDialog extends JDialog {
 					}
 				}
 			} catch (Exception e) {
-				System.out.println("Error while importing configuration:\n" + e.toString());
+				YEx.info("Error while importing configuration", e);
 			}
 			updateFromConfiguration();
 		}
